@@ -1,22 +1,20 @@
-# Projekt-Name (z.B. Marki Desktop)
+# Marki
 
-Eine moderne Desktop-Anwendung gebaut mit Electron.
+**Marki** is a modern, high-performance desktop application built with **Electron**, designed for users who value speed and aesthetic clarity.
 
-## 🚀 Die Vision
-Ich möchte eine App bauen, die [hier Zweck einfügen, z.B. Ordnung in meine Projektordner bringt]. Der Fokus liegt auf Geschwindigkeit und einem extrem minimalistischen Design.
+## The Vision
 
-## ✨ Geplante Features
-- [ ] **Ordner-Auswahl:** Schnelles Wählen von Arbeitsverzeichnissen über den System-Dialog.
-- [ ] **Datei-Browser:** Eine Liste aller Dateien im gewählten Ordner anzeigen.
-- [ ] **Modern UI:** Komplett ohne Standard-Menüleiste, stattdessen mit Custom Titlebar.
-- [ ] **Dark Mode:** Automatisches Umschalten je nach Systemeinstellung.
+The core philosophy behind Marki is to eliminate the friction between thought and digital ink. Most editors are cluttered or visually unappealing; Marki provides a distraction-free environment to jot down information instantly.
 
-## 🎨 Design-Ideen
-- **Look:** Inspiriert von macOS-Systemeinstellungen (viel Weißraum, abgerundete Ecken).
-- **Farben:** Akzentfarbe Blau (#007AFF), Hintergründe in leichtem Grau (#F5F5F7).
-- **Interaktion:** Sanfte Hover-Effekte auf Buttons und Drag-and-Drop Unterstützung.
+While fully mouse-compatible, the app is **keyboard-first**. Every essential action is mapped to intuitive shortcuts, allowing power users to navigate, edit, and manage their notes without ever lifting their hands from the home row.
 
-## 🛠 Tech-Stack
-- **Framework:** Electron
-- **Frontend:** HTML, CSS (vielleicht später Tailwind), JavaScript
-- **Icons:** Lucide Icons oder Heroicons
+## Key Features
+
+* **Dual-Engine Interface:** Seamlessly switch between a dedicated **Markdown Editor** and a high-fidelity **Live Preview**.
+* **Flexible Layouts:** Choose the workflow that fits your focus:
+* **Editor Only:** For deep-work writing sessions.
+* **Preview Only:** For a clean reading experience.
+* **Split View:** Real-time side-by-side synchronization for instant feedback.
+
+
+* **Keyboard-Centric Navigation:** Comprehensive shortcut support for a mouse-free workflow.
