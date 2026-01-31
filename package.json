@@ -1,10 +1,10 @@
 {
   "name": "marki",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Minimalist, modern and clean Markdown Editor",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron ./src/main.js"
   },
   "keywords": [],
   "author": "",

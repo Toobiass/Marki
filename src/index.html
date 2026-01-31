@@ -3,107 +3,144 @@
 
 <head>
     <style>
+        ::-webkit-scrollbar {
+            width: 10px;
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(121, 121, 121, 0.2);
+            border-radius: 0px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+
+        .pane:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(121, 121, 121, 0.4);
+        }
+
+        ::-webkit-scrollbar-thumb:active {
+            background-color: rgba(121, 121, 121, 0.7);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
         :root {
+            --bg-dark: #121212;
             --bg-editor: #1e1e1e;
-            --text-muted: #858585;
+            --text-main: #d4d4d4;
             --accent: #007acc;
+            --border: #333333;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-editor);
-            color: var(--text-muted);
-            height: 100vh;
             margin: 0;
+            padding: 0;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .pane {
+            flex: 1;
+            width: 50%;
+            max-width: 50%;
+            height: 100vh;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            user-select: none;
         }
 
-        .hint {
-            font-size: 14px;
-            opacity: 0.6;
-            transition: opacity 0.3s;
+        .editor-pane {
+            background: var(--bg-editor);
+            border-right: 1px solid var(--border);
         }
 
-        .hint b {
-            color: var(--accent);
-            background: #252526;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: normal;
+        .preview-pane {
+            background: var(--bg-editor);
         }
 
-        #status {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 22px;
-            background: var(--accent);
-            color: white;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            transform: translateY(100%);
-            transition: transform 0.2s;
+        textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            color: var(--text-main);
+            border: none;
+            padding: 40px;
+            font-size: 16px;
+            font-family: 'Consolas', monospace;
+            resize: none;
+            outline: none;
+            box-sizing: border-box;
         }
 
-        #status.visible {
-            transform: translateY(0);
+        #preview {
+            padding: 40px;
+            line-height: 1.6;
+            word-wrap: break-word;
         }
     </style>
 </head>
 
 <body>
-    <div class="hint" id="welcome-hint">
-        Drücke <b>Strg + P</b> um den Speicherort festzulegen
+    <div class="main-container">
+        <div class="pane editor-pane">
+            <textarea id="editor" placeholder="Schreib hier..."></textarea>
+        </div>
+
+        <div class="pane preview-pane">
+            <div id="preview"></div>
+        </div>
     </div>
-
-    <div id="status">
-        Speicherort: <span id="current-path" style="margin-left: 5px; opacity: 0.9;"></span>
-    </div>
-
-    <script>
-        const status = document.getElementById('status');
-        const pathSpan = document.getElementById('current-path');
-        const hint = document.getElementById('welcome-hint');
-
-        document.addEventListener('keydown', async (e) => {
-            // Strg + P abfangen
-            if (e.ctrlKey && e.key.toLowerCase() === 'p') {
-                e.preventDefault(); // Standard Druck-Dialog verhindern
-
-                const filePath = await window.electronAPI.selectFolder();
-                if (filePath) {
-                    pathSpan.innerText = filePath;
-                    status.classList.add('visible');
-                    hint.style.opacity = '0.2';
-
-                    // Speicherpfad im LocalStorage merken
-                    localStorage.setItem('marki-path', filePath);
-                    console.log("Speicherort gesetzt auf:", filePath);
-                }
-            }
-            if (e.ctrlKey && e.key.toLowerCase() === 'i') {
-                //show info page with all commands and what they do
-            }
-        });
-
-        // Beim Start prüfen ob schon ein Pfad gespeichert war
-        window.onload = () => {
-            const savedPath = localStorage.getItem('marki-path');
-            if (savedPath) {
-                pathSpan.innerText = savedPath;
-                status.classList.add('visible');
-                hint.style.opacity = '0.2';
-            }
-        }
-    </script>
 </body>
 
 </html>
+<script>
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+
+    if (editor && preview) {
+        editor.addEventListener('input', () => {
+            preview.innerText = editor.value;
+        });
+    }
+
+    document.addEventListener('keydown', async (e) => {
+        if (e.ctrlKey && e.key.toLowerCase() === 'p') {
+            e.preventDefault();
+
+            const filePath = await window.electronAPI.selectFolder();
+            window.electronAPI.log("Dialog-Ergebnis: " + filePath);
+
+            if (filePath) {
+                localStorage.setItem('marki-path', filePath);
+                window.electronAPI.log("Erfolgreich gespeichert!");
+            }
+        }
+    });
+
+    window.onload = () => {
+        const savedPath = localStorage.getItem('marki-path');
+
+        if (savedPath) {
+            window.electronAPI.log("Willkommen zurück! Pfad ist: " + savedPath);
+        } else {
+            window.electronAPI.log("Kein Pfad im Speicher gefunden.");
+        }
+    }
+</script>
