@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <style>
         ::-webkit-scrollbar {
@@ -64,6 +63,7 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .editor-pane {
@@ -73,6 +73,7 @@
 
         .preview-pane {
             background: var(--bg-editor);
+            overflow-y: auto;
         }
 
         textarea {
@@ -87,12 +88,14 @@
             resize: none;
             outline: none;
             box-sizing: border-box;
+            overflow-y: auto;
         }
 
         #preview {
             padding: 40px;
             line-height: 1.6;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -103,44 +106,54 @@
             <textarea id="editor" placeholder="Schreib hier..."></textarea>
         </div>
 
-        <div class="pane preview-pane">
+        <div class="pane preview-pane" id="preview-container">
             <div id="preview"></div>
         </div>
     </div>
-</body>
 
-</html>
-<script>
-    const editor = document.getElementById('editor');
-    const preview = document.getElementById('preview');
+    <script>
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('preview-container');
 
-    if (editor && preview) {
         editor.addEventListener('input', () => {
             preview.innerText = editor.value;
         });
-    }
 
-    document.addEventListener('keydown', async (e) => {
-        if (e.ctrlKey && e.key.toLowerCase() === 'p') {
-            e.preventDefault();
+        let isSyncing = false;
 
-            const filePath = await window.electronAPI.selectFolder();
-            window.electronAPI.log("Dialog-Ergebnis: " + filePath);
-
-            if (filePath) {
-                localStorage.setItem('marki-path', filePath);
-                window.electronAPI.log("Erfolgreich gespeichert!");
+        const syncScroll = (source, target) => {
+            if (isSyncing) {
+                isSyncing = false;
+                return;
             }
-        }
-    });
+            isSyncing = true;
 
-    window.onload = () => {
-        const savedPath = localStorage.getItem('marki-path');
+            const percentage = source.scrollTop / (source.scrollHeight - source.clientHeight);
+            target.scrollTop = percentage * (target.scrollHeight - target.clientHeight);
+        };
 
-        if (savedPath) {
-            window.electronAPI.log("Willkommen zurück! Pfad ist: " + savedPath);
-        } else {
-            window.electronAPI.log("Kein Pfad im Speicher gefunden.");
-        }
-    }
-</script>
+        editor.addEventListener('scroll', () => syncScroll(editor, previewContainer));
+        previewContainer.addEventListener('scroll', () => syncScroll(previewContainer, editor));
+
+        document.addEventListener('keydown', async (e) => {
+            if (e.ctrlKey && e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                const filePath = await window.electronAPI.selectFolder();
+                if (filePath) {
+                    localStorage.setItem('marki-path', filePath);
+                    window.electronAPI.log("Erfolgreich gespeichert!");
+                }
+            }
+        });
+
+        window.onload = () => {
+            const savedPath = localStorage.getItem('marki-path');
+            if (savedPath) {
+                window.electronAPI.log("Willkommen zurück! Pfad ist: " + savedPath);
+            }
+        };
+    </script>
+</body>
+
+</html>
