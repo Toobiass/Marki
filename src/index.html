@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
         ::-webkit-scrollbar {
@@ -24,6 +25,13 @@
 
         ::-webkit-scrollbar-thumb:active {
             background-color: rgba(121, 121, 121, 0.7);
+        }
+
+        .preview-pane::-webkit-scrollbar {
+            display: none;
+            /* Versteckt den Scrollbalken in Chrome, Safari und Edge */
+            width: 0;
+            /* Zusätzliche Absicherung */
         }
 
         ::-webkit-scrollbar-corner {
