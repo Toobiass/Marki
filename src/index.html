@@ -2,12 +2,12 @@
 <html>
 
 <head>
-
+    <meta charset="UTF-8">
     <script src="../node_modules/marked/lib/marked.umd.js"></script>
 
     <style>
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
             background-color: transparent;
         }
 
@@ -17,7 +17,7 @@
 
         ::-webkit-scrollbar-thumb {
             background-color: rgba(121, 121, 121, 0.2);
-            border-radius: 0px;
+            border-radius: 4px;
             border: 2px solid transparent;
             background-clip: content-box;
         }
@@ -43,8 +43,8 @@
             --bg-dark: #121212;
             --bg-editor: #1e1e1e;
             --text-main: #d4d4d4;
-            --accent: #007acc;
-            --border: #333333;
+            --accent: #4fc3f7;
+            --border: #2d2d2d;
         }
 
         body {
@@ -78,25 +78,53 @@
         .editor-pane {
             background: var(--bg-editor);
             border-right: 1px solid var(--border);
+            position: relative;
+        }
+
+        .cm-editor {
+            height: 100%;
+            font-family: var(--font-mono) !important;
+            font-size: 15px !important;
+            background-color: var(--bg-editor) !important;
+        }
+
+        .cm-scroller {
+            padding: 20px 0;
+        }
+
+        .cm-content {
+            padding: 0 40px !important;
+        }
+
+        .cm-content .cm-bold {
+            color: inherit !important;
+        }
+
+        .cm-placeholder {
+            color: #666 !important;
+            background: none !important;
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .cm-line:has(.cm-placeholder) {
+            background: transparent !important;
+        }
+
+        .cm-focused .cm-activeLine,
+        .cm-activeLine,
+        .cm-activeLineGutter {
+            background-color: transparent !important;
+        }
+
+        .cm-selectionBackground,
+        .cm-content ::selection {
+            background-color: #264f78 !important;
         }
 
         .preview-pane {
             background: var(--bg-editor);
-            overflow-y: auto;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            color: var(--text-main);
-            border: none;
-            padding: 40px;
-            font-size: 16px;
-            font-family: 'Consolas', monospace;
-            resize: none;
-            outline: none;
-            box-sizing: border-box;
             overflow-y: auto;
         }
 
@@ -106,16 +134,56 @@
             word-wrap: break-word;
         }
 
-        #preview h1,
-        #preview h2,
+        #preview h1 {
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        #preview h2 {
+            color: var(--text-main);
+            margin-top: 1.5em;
+        }
+
         #preview h3 {
-            margin-top: 0.5em;
-            margin-bottom: 0.5em;
+            color: var(--text-main);
         }
 
         #preview p {
-            margin-top: 0;
-            margin-bottom: 8px;
+            margin-bottom: 16px;
+            opacity: 0.9;
+        }
+
+        #preview code {
+            background: #2d2d2d;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+        }
+
+        #preview pre {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        #preview blockquote {
+            border-left: 4px solid var(--text-main);
+            margin: 0;
+            padding-left: 20px;
+            color: #888;
+        }
+
+        #preview a {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        #preview a:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -123,7 +191,7 @@
 <body>
     <div class="main-container">
         <div class="pane editor-pane">
-            <textarea id="editor" placeholder="Schreib hier..."></textarea>
+            <div id="editor-container" style="height: 100%;"></div>
         </div>
 
         <div class="pane preview-pane" id="preview-container">
@@ -131,20 +199,89 @@
         </div>
     </div>
 
+    <script src="editor/editor.bundle.js"></script>
+
     <script>
-        const editor = document.getElementById('editor');
+        const { EditorView, basicSetup, markdown, EditorState, HighlightStyle, syntaxHighlighting, tags: t, placeholder } = window.CodeMirrorBundle;
+
         const preview = document.getElementById('preview');
         const previewContainer = document.getElementById('preview-container');
 
-        const updatePreview = () => {
-            preview.innerHTML = marked.parse(editor.value);
+        const updatePreview = (content) => {
+            preview.innerHTML = marked.parse(content);
+        }
+        const color = "#569cd6";
+
+        function createMarkdownHighlightStyle() {
+            return HighlightStyle.define([
+                { tag: t.heading, color: color, fontWeight: "bold" },
+                { tag: t.strong, color: color },
+                { tag: t.emphasis, color: color },
+                { tag: t.link, color: color },
+                { tag: t.url, color: color },
+                { tag: t.keyword, color: color },
+                { tag: t.atom, color: color },
+                { tag: t.meta, color: color },
+                { tag: t.strikethrough, color: color },
+                { tag: t.special(t.string), color: color },
+                { tag: t.processingInstruction, color: color },
+            ]);
         }
 
-        editor.addEventListener('input', () => {
-            updatePreview();
+        function createDarkTheme() {
+            return EditorView.theme({
+                "&": {
+                    backgroundColor: "#1e1e1e",
+                    color: "#d4d4d4"
+                },
+                ".cm-content": {
+                    caretColor: "#aeafad"
+                },
+                ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#aeafad" },
+                "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": { backgroundColor: "#264f78" },
+                ".cm-selectionBackground": { backgroundColor: "#264f78 !important" },
+                ".cm-gutters": {
+                    backgroundColor: "#1e1e1e",
+                    color: "#858585",
+                    border: "none"
+                },
+                ".cm-activeLineGutter": {
+                    backgroundColor: "#1e1e1e",
+                    color: "#d4d4d4"
+                }
+            }, { dark: true });
+        }
+
+        function createEditorState(initialDoc = "") {
+            return EditorState.create({
+                doc: initialDoc,
+                extensions: [
+                    basicSetup,
+                    markdown(),
+                    createDarkTheme(),
+                    syntaxHighlighting(createMarkdownHighlightStyle()),
+                    placeholder("Write anything..."),
+                    EditorView.lineWrapping,
+                    EditorView.updateListener.of((update) => {
+                        if (update.docChanged) {
+                            updatePreview(update.state.doc.toString());
+                        }
+                    }),
+                    EditorView.domEventHandlers({
+                        scroll: (event, view) => {
+                            syncScroll(view.scrollDOM, previewContainer);
+                        }
+                    })
+                ]
+            });
+        }
+
+        const view = new EditorView({
+            state: createEditorState(),
+            parent: document.getElementById('editor-container')
         });
 
-        updatePreview(); // Initiale Vorschau rendern
+        updatePreview(view.state.doc.toString());
 
         let isSyncing = false;
 
@@ -156,11 +293,14 @@
             isSyncing = true;
 
             const percentage = source.scrollTop / (source.scrollHeight - source.clientHeight);
-            target.scrollTop = percentage * (target.scrollHeight - target.clientHeight);
+            if (!isNaN(percentage)) {
+                target.scrollTop = percentage * (target.scrollHeight - target.clientHeight);
+            }
         };
 
-        editor.addEventListener('scroll', () => syncScroll(editor, previewContainer));
-        previewContainer.addEventListener('scroll', () => syncScroll(previewContainer, editor));
+        previewContainer.addEventListener('scroll', () => {
+            syncScroll(previewContainer, view.scrollDOM);
+        });
 
         document.addEventListener('keydown', async (e) => {
             if (e.ctrlKey && e.key.toLowerCase() === 'p') {
