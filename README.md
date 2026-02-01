@@ -21,13 +21,6 @@ While fully mouse-compatible, the app is **keyboard-first**. Every essential act
 
 ## Important Imports
 
-**npm install electron**
-**npm install --save-dev electron-reloader**
-**npm install marked**
-
-```python
-def begruessung(name):
-    print(f"Hallo, {name}!")
-
-begruessung("Welt")
-```
+**npm install electron**  
+**npm install --save-dev electron-reloader**  
+**npm install marked**  
