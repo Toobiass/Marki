@@ -18,3 +18,16 @@ While fully mouse-compatible, the app is **keyboard-first**. Every essential act
 
 
 * **Keyboard-Centric Navigation:** Comprehensive shortcut support for a mouse-free workflow.
+
+## Important Imports
+
+**npm install electron**
+**npm install --save-dev electron-reloader**
+**npm install marked**
+
+```python
+def begruessung(name):
+    print(f"Hallo, {name}!")
+
+begruessung("Welt")
+```

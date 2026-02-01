@@ -13,5 +13,8 @@
   "devDependencies": {
     "electron": "^40.1.0",
     "electron-reloader": "^1.2.3"
+  },
+  "dependencies": {
+    "marked": "^17.0.1"
   }
 }

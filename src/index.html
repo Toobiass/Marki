@@ -2,6 +2,9 @@
 <html>
 
 <head>
+
+    <script src="../node_modules/marked/lib/marked.umd.js"></script>
+
     <style>
         ::-webkit-scrollbar {
             width: 10px;
@@ -29,9 +32,7 @@
 
         .preview-pane::-webkit-scrollbar {
             display: none;
-            /* Versteckt den Scrollbalken in Chrome, Safari und Edge */
             width: 0;
-            /* Zusätzliche Absicherung */
         }
 
         ::-webkit-scrollbar-corner {
@@ -101,9 +102,20 @@
 
         #preview {
             padding: 40px;
-            line-height: 1.6;
+            line-height: 1.2;
             word-wrap: break-word;
-            white-space: pre-wrap;
+        }
+
+        #preview h1,
+        #preview h2,
+        #preview h3 {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        #preview p {
+            margin-top: 0;
+            margin-bottom: 8px;
         }
     </style>
 </head>
@@ -124,9 +136,15 @@
         const preview = document.getElementById('preview');
         const previewContainer = document.getElementById('preview-container');
 
+        const updatePreview = () => {
+            preview.innerHTML = marked.parse(editor.value);
+        }
+
         editor.addEventListener('input', () => {
-            preview.innerText = editor.value;
+            updatePreview();
         });
+
+        updatePreview(); // Initiale Vorschau rendern
 
         let isSyncing = false;
 
