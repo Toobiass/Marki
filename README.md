@@ -18,3 +18,13 @@ While fully mouse-compatible, the app is **keyboard-first**. Every essential act
 
 
 * **Keyboard-Centric Navigation:** Comprehensive shortcut support for a mouse-free workflow.
+
+## Important Imports
+
+**npm install electron**  
+**npm install --save-dev electron-reloader esbuild**  
+**npm install marked codemirror**  
+**npm install @codemirror/lang-markdown @codemirror/language @lezer/highlight @codemirror/state @codemirror/view**
+
+## Bundle Befehl (für Offline-Modus)
+**npx esbuild src/editor/editor.js --bundle --outfile=src/editor/editor.bundle.js --format=iife**
