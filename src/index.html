@@ -207,6 +207,8 @@
         const preview = document.getElementById('preview');
         const previewContainer = document.getElementById('preview-container');
 
+        let currentFilePath = null;
+
         const updatePreview = (content) => {
             preview.innerHTML = marked.parse(content);
         }
@@ -310,6 +312,43 @@
                     localStorage.setItem('marki-path', filePath);
                     window.electronAPI.log("Erfolgreich gespeichert!");
                 }
+            }
+        });
+
+        const getSuggestedFilename = (content) => {
+            const h1Match = content.match(/^#\s+(.*)$/m);
+            if (h1Match && h1Match[1]) {
+                return h1Match[1].trim().replace(/[<>:"/\\|?*]/g, '').substring(0, 50);
+            }
+            return content.trim().substring(0, 20).replace(/\n/g, ' ').replace(/[<>:"/\\|?*]/g, '') || 'untitled';
+        };
+
+        const handleSave = async () => {
+            const content = view.state.doc.toString();
+            const suggestedName = getSuggestedFilename(content);
+
+            const result = await window.electronAPI.saveFile({
+                content,
+                existingPath: currentFilePath,
+                suggestedName
+            });
+
+            if (result.success) {
+                currentFilePath = result.filePath;
+                window.electronAPI.log(`Saved to: ${currentFilePath}`);
+            }
+        };
+
+        document.addEventListener('keydown', async (e) => {
+            if (e.ctrlKey && e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                const filePath = await window.electronAPI.selectFolder();
+                if (filePath) window.electronAPI.log("Standard folder updated!");
+            }
+
+            if (e.ctrlKey && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                await handleSave();
             }
         });
 

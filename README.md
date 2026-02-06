@@ -24,7 +24,7 @@ While fully mouse-compatible, the app is **keyboard-first**. Every essential act
 **npm install electron**  
 **npm install --save-dev electron-reloader esbuild**  
 **npm install marked codemirror**  
-**npm install @codemirror/lang-markdown @codemirror/language @lezer/highlight @codemirror/state @codemirror/view**
-
+**npm install @codemirror/lang-markdown @codemirror/language @lezer/highlight @codemirror/state @codemirror/view**  
+**npm install electron-store**  
 ## Bundle Befehl (für Offline-Modus)
 **npx esbuild src/editor/editor.js --bundle --outfile=src/editor/editor.bundle.js --format=iife**
