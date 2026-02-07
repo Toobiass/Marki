@@ -42,6 +42,30 @@ ipcMain.handle('dialog:openDirectory', async () => {
     return null;
 });
 
+ipcMain.handle('file:open', async () => {
+    const defaultDir = store.get('standard-folder') || app.getPath('documents');
+
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+        title: 'Open Markdown File',
+        defaultPath: defaultDir,
+        properties: ['openFile'],
+        filters: [{ name: 'Markdown', extensions: ['md'] }]
+    });
+
+    if (canceled || !filePaths || filePaths.length === 0) return null;
+
+    const filePath = filePaths[0];
+    if (!filePath.toLowerCase().endsWith('.md')) return null;
+
+    try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        return { filePath, content };
+    } catch (err) {
+        console.error('Open failed:', err);
+        return null;
+    }
+});
+
 ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName }) => {
     let savePath = existingPath;
 
