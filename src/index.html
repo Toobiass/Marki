@@ -447,12 +447,21 @@
                 e.preventDefault();
                 await handleSave();
             }
+
+            if(e.ctrlKey && e.key.toLowerCase() === 'n') {
+                currentFilePath = null;
+                savedContent = '';
+                updateDocTitleBar();
+                view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: '' } });
+                updatePreview('');
+                window.electronAPI.log("Document state cleared!");
+            }
         });
 
         window.onload = () => {
             const savedPath = localStorage.getItem('marki-path');
             if (savedPath) {
-                window.electronAPI.log("Willkommen zurück! Pfad ist: " + savedPath);
+                window.electronAPI.log("savedPath: " + savedPath);
             }
         };
     </script>

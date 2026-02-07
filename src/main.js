@@ -26,7 +26,7 @@ function createWindow() {
 }
 
 ipcMain.on('log-to-terminal', (event, message) => {
-    console.log("Renderer sagt:", message);
+    console.log("Log:", message);
 });
 
 ipcMain.handle('dialog:openDirectory', async () => {
