@@ -28,3 +28,12 @@ While fully mouse-compatible, the app is **keyboard-first**. Every essential act
 **npm install electron-store**  
 ## Bundle Befehl (für Offline-Modus)
 **npx esbuild src/editor/editor.js --bundle --outfile=src/editor/editor.bundle.js --format=iife**
+
+## Command Table
+
+| Shortcut        | Action                          |
+|-----------------|---------------------------------|
+| Ctrl + S        | Save document                   |
+| Ctrl + O        | Open document                   |
+| Ctrl + N        | Create new document             |
+| Ctrl + P        | Set default folder              |
