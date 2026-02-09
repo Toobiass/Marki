@@ -2,20 +2,45 @@
   "name": "marki",
   "version": "0.1.0",
   "description": "Minimalist, modern and clean Markdown Editor",
-  "main": "src/main.js",
+  "main": "electron/main.js",
   "scripts": {
-    "start": "electron ./src/main.js"
+    "ng": "ng",
+    "start": "concurrently \"ng build --watch\" \"wait-on dist/marki/browser/index.html && electron .\"",
+    "dev": "ng serve",
+    "electron": "electron .",
+    "build": "ng build --configuration production",
+    "make-installer": "npm run build && electron-builder"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "electron": "^40.1.0",
-    "electron-reloader": "^1.2.3",
-    "esbuild": "^0.27.2"
+  "build": {
+    "appId": "com.marki.editor",
+    "productName": "Marki",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/marki/browser/**/*",
+      "electron/**/*",
+      "package.json",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
+  "private": true,
   "dependencies": {
+    "@angular/animations": "^19.0.0",
+    "@angular/common": "^19.0.0",
+    "@angular/compiler": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "@angular/forms": "^19.0.0",
+    "@angular/platform-browser": "^19.0.0",
+    "@angular/platform-browser-dynamic": "^19.0.0",
+    "@angular/router": "^19.0.0",
     "@codemirror/lang-markdown": "^6.5.0",
     "@codemirror/language": "^6.12.1",
     "@codemirror/state": "^6.5.4",
@@ -23,6 +48,20 @@
     "@lezer/highlight": "^1.2.3",
     "codemirror": "^6.0.2",
     "electron-store": "^11.0.2",
-    "marked": "^17.0.1"
+    "marked": "^17.0.1",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.0.6",
+    "@angular/cli": "^19.0.6",
+    "@angular/compiler-cli": "^19.0.0",
+    "concurrently": "^9.2.1",
+    "electron": "^40.1.0",
+    "electron-builder": "^26.7.0",
+    "electron-reloader": "^1.2.3",
+    "typescript": "~5.6.2",
+    "wait-on": "^9.0.3"
   }
 }

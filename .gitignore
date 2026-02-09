@@ -1,4 +1,29 @@
+# Dependencies
 node_modules/
+
+# Angular build outputs
 dist/
+.angular/
+
+# Electron-builder output
+release/
+
+# Legacy code (optional, remove if you want to commit it)
+# src-legacy/
+# package-legacy.json
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Operating System files
 .DS_Store
+Thumbs.db
+
+# Environment variables
 .env

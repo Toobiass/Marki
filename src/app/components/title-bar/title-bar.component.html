@@ -1,0 +1,10 @@
+@if (displayPath()) {
+<div class="doc-title-bar">
+    <span class="doc-title-text">
+        {{ displayPath() }}
+        @if (editorService.isDirty()) {
+        <span class="unsaved-dot">•</span>
+        }
+    </span>
+</div>
+}

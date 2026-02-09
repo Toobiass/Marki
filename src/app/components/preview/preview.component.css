@@ -1,0 +1,59 @@
+.preview-pane {
+    background: var(--bg-editor);
+    overflow-y: auto;
+    height: 100%;
+}
+
+#preview {
+    padding: 40px;
+    line-height: 1.2;
+    word-wrap: break-word;
+}
+
+:host ::ng-deep #preview h1 {
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
+:host ::ng-deep #preview h2 {
+    color: var(--text-main);
+    margin-top: 1.5em;
+}
+
+:host ::ng-deep #preview h3 {
+    color: var(--text-main);
+}
+
+:host ::ng-deep #preview p {
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+:host ::ng-deep #preview code {
+    background: #2d2d2d;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+:host ::ng-deep #preview pre {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+}
+
+:host ::ng-deep #preview blockquote {
+    border-left: 4px solid var(--text-main);
+    margin: 0;
+    padding-left: 20px;
+    color: #888;
+}
+
+:host ::ng-deep #preview a {
+    color: var(--text-main);
+    text-decoration: underline;
+}
