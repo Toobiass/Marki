@@ -1,12 +1,11 @@
 import { Component, OnInit, ElementRef, ViewChild, inject, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { EditorService } from '../../services/editor.service';
 import { marked } from 'marked';
 
 @Component({
   selector: 'app-preview',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.css']
 })

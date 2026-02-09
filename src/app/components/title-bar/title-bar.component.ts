@@ -1,11 +1,10 @@
 import { Component, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { EditorService } from '../../services/editor.service';
 
 @Component({
   selector: 'app-title-bar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './title-bar.component.html',
   styleUrls: ['./title-bar.component.css']
 })

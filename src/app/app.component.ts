@@ -1,5 +1,4 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TitleBarComponent } from './components/title-bar/title-bar.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { PreviewComponent } from './components/preview/preview.component';
@@ -9,7 +8,7 @@ import { ElectronService } from './services/electron.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, TitleBarComponent, EditorComponent, PreviewComponent],
+  imports: [TitleBarComponent, EditorComponent, PreviewComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
