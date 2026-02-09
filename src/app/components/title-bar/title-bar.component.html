@@ -1,0 +1,6 @@
+<div class="doc-title-bar" *ngIf="displayPath()">
+    <span class="doc-title-text">
+        {{ displayPath() }}
+        <span *ngIf="editorService.isDirty()" class="unsaved-dot">•</span>
+    </span>
+</div>

@@ -1,6 +1,6 @@
 # Marki
 
-**Marki** is a modern, high-performance desktop application built with **Electron**, designed for users who value speed and aesthetic clarity.
+**Marki** is a modern, high-performance desktop application built with **Angular (v19)** and **Electron**, designed for users who value speed and aesthetic clarity.
 
 ## The Vision
 
@@ -16,24 +16,50 @@ While fully mouse-compatible, the app is **keyboard-first**. Every essential act
 * **Preview Only:** For a clean reading experience.
 * **Split View:** Real-time side-by-side synchronization for instant feedback.
 
+## Setup & Installation (For Developers)
 
-* **Keyboard-Centric Navigation:** Comprehensive shortcut support for a mouse-free workflow.
+To run this project on a new device, follow these steps:
 
-## Important Imports
+### 1. Prerequisites
+Ensure that **Node.js** (latest LTS version) is installed on your system.
 
-**npm install electron**  
-**npm install --save-dev electron-reloader esbuild**  
-**npm install marked codemirror**  
-**npm install @codemirror/lang-markdown @codemirror/language @lezer/highlight @codemirror/state @codemirror/view**  
-**npm install electron-store**  
-## Bundle Befehl (für Offline-Modus)
-**npx esbuild src/editor/editor.js --bundle --outfile=src/editor/editor.bundle.js --format=iife**
+### 2. Install Dependencies
+Clone the repository and run the following command in the root directory:
+```bash
+npm install
+```
+*This will automatically install Angular, Electron, CodeMirror, Marked, and all other necessary packages defined in `package.json`.*
 
-## Command Table
+### 3. Start Application (Development Mode)
+To start the app in development mode with live build:
+```bash
+npm start
+```
+*Note: This command builds the Angular app in the background and automatically launches the Electron window once ready.*
+
+### 4. Create Installer (EXE)
+To generate a production-ready installer (`.exe`) for Windows:
+```bash
+npm run make-installer
+```
+*The installer will be generated in the `/release` folder.*
+
+---
+
+## ⌨️ Shortcut Table
 
 | Shortcut        | Action                          |
 |-----------------|---------------------------------|
-| Ctrl + S        | Save document                   |
-| Ctrl + O        | Open document                   |
-| Ctrl + N        | Create new document             |
-| Ctrl + P        | Set default folder              |
+| **Ctrl + S**    | Save document                   |
+| **Ctrl + O**    | Open document                   |
+| **Ctrl + N**    | Create new document             |
+| **Ctrl + P**    | Set default folder              |
+
+---
+
+## 🛠 Tech Stack
+*   **Frontend:** Angular 19 (Signals, Standalone Components)
+*   **Runtime:** Electron
+*   **Editor Engine:** CodeMirror 6
+*   **Markdown Rendering:** Marked
+*   **Build Tool:** Angular CLI & Electron-Builder

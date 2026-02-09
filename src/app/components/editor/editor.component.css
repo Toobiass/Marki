@@ -1,0 +1,33 @@
+.editor-container {
+    height: 100%;
+    width: 100%;
+    background: var(--bg-editor);
+}
+
+:host ::ng-deep .cm-editor {
+    height: 100%;
+    font-family: var(--font-mono) !important;
+    font-size: 15px !important;
+    background-color: var(--bg-editor) !important;
+}
+
+:host ::ng-deep .cm-scroller {
+    padding: 20px 0;
+}
+
+:host ::ng-deep .cm-content {
+    padding: 0 40px !important;
+}
+
+:host ::ng-deep .cm-placeholder {
+    color: #666 !important;
+}
+
+:host ::ng-deep .cm-selectionBackground,
+:host ::ng-deep .cm-content ::selection {
+    background-color: #264f78 !important;
+}
+
+:host ::ng-deep .cm-activeLine {
+    background-color: transparent !important;
+}

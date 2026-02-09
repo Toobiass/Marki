@@ -22,7 +22,7 @@ function createWindow() {
     });
 
     Menu.setApplicationMenu(null);
-    win.loadFile(path.join(__dirname, 'index.html'));
+    win.loadFile(path.join(__dirname, '../dist/marki/browser/index.html'));
 }
 
 ipcMain.on('log-to-terminal', (event, message) => {
