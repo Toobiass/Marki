@@ -1,0 +1,12 @@
+@if (isVisible()) {
+<div class="overlay" (click)="isVisible.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+        <div class="header">Recent Files</div>
+        @for (item of items(); track item.path; let i = $index) {
+        <div class="item" [class.selected]="i === selectedIndex()" (click)="selectItem(item)">
+            {{ item.name }}
+        </div>
+        }
+    </div>
+</div>
+}

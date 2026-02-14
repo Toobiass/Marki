@@ -25,6 +25,12 @@ function createWindow() {
     win.loadFile(path.join(__dirname, '../dist/marki/browser/index.html'));
 }
 
+function addRecentFile(filePath) {
+    let recents = store.get('recent-files') || [];
+    recents = [filePath, ...recents.filter(r => r !== filePath)];
+    store.set('recent-files', recents.slice(0, 6));
+}
+
 ipcMain.on('log-to-terminal', (event, message) => {
     console.log("Log:", message);
 });
@@ -59,6 +65,7 @@ ipcMain.handle('file:open', async () => {
 
     try {
         const content = fs.readFileSync(filePath, 'utf8');
+        addRecentFile(filePath);
         return { filePath, content };
     } catch (err) {
         console.error('Open failed:', err);
@@ -84,11 +91,23 @@ ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName
 
     try {
         fs.writeFileSync(savePath, content, 'utf8');
+        addRecentFile(savePath);
         return { success: true, filePath: savePath };
     } catch (err) {
         console.error("Save failed:", err);
         return { success: false, error: err.message };
     }
+});
+
+ipcMain.handle('file:get-recents', () => store.get('recent-files') || []);
+
+
+ipcMain.handle('file:read-path', async (event, filePath) => {
+    try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        addRecentFile(filePath); // Auch beim direkten Öffnen tracken
+        return { filePath, content };
+    } catch (err) { return null; }
 });
 
 app.whenReady().then(createWindow);
