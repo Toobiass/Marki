@@ -1,18 +1,21 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { TitleBarComponent } from './components/title-bar/title-bar.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { PreviewComponent } from './components/preview/preview.component';
 import { EditorService } from './services/editor.service';
 import { ElectronService } from './services/electron.service';
+import { QuickOpenComponent } from './components/quick-open/quick-open.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TitleBarComponent, EditorComponent, PreviewComponent],
+  imports: [TitleBarComponent, EditorComponent, PreviewComponent, QuickOpenComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  @ViewChild(QuickOpenComponent) quickOpen!: QuickOpenComponent;
+
   private editorService = inject(EditorService);
   private electronService = inject(ElectronService);
 
@@ -32,7 +35,8 @@ export class AppComponent implements OnInit {
         await this.handleSave();
       } else if (key === 'o') {
         event.preventDefault();
-        await this.handleOpen();
+        event.stopImmediatePropagation();
+        this.quickOpen.handleTrigger();
       } else if (key === 'n') {
         event.preventDefault();
         this.handleNew();
