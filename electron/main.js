@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { app, BrowserWindow, dialog, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme } = require('electron');
 const path = require('path');
 const packageInfo = require('../package.json');
 const Store = require('electron-store');
@@ -108,6 +108,22 @@ ipcMain.handle('file:read-path', async (event, filePath) => {
         addRecentFile(filePath); // Auch beim direkten Öffnen tracken
         return { filePath, content };
     } catch (err) { return null; }
+});
+
+ipcMain.handle('settings:get', (event) => {
+    return {
+        standardFolder: store.get('standard-folder') || '',
+        theme: store.get('theme') || 'dark',
+    };
+});
+
+ipcMain.handle('settings:set', (event, { key, value }) => {
+    store.set(key, value);
+    return true;
+});
+
+ipcMain.on('theme:set-native', (event, theme) => {
+    nativeTheme.themeSource = theme;
 });
 
 app.whenReady().then(createWindow);

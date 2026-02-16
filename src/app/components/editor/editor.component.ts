@@ -41,28 +41,32 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
 
   private initEditor() {
     const highlightStyle = HighlightStyle.define([
-      { tag: t.heading, color: "#569cd6", fontWeight: "bold" },
-      { tag: t.strong, color: "#569cd6" },
-      { tag: t.emphasis, color: "#569cd6" },
-      { tag: t.link, color: "#569cd6" },
-      { tag: t.url, color: "#569cd6" },
-      { tag: t.keyword, color: "#569cd6" },
-      { tag: t.atom, color: "#569cd6" },
-      { tag: t.meta, color: "#569cd6" },
-      { tag: t.strikethrough, color: "#569cd6" },
-      { tag: t.special(t.string), color: "#569cd6" },
-      { tag: t.processingInstruction, color: "#569cd6" },
+      { tag: t.heading, color: "var(--accent)", fontWeight: "bold" },
+      { tag: t.strong, color: "var(--accent)", fontWeight: "bold" },
+      { tag: t.emphasis, color: "var(--accent)", fontStyle: "italic" },
+      { tag: t.link, color: "var(--accent)", textDecoration: "underline" },
+      { tag: t.url, color: "var(--accent)" },
+      { tag: t.keyword, color: "var(--accent)" },
+      { tag: t.atom, color: "var(--accent)" },
+      { tag: t.meta, color: "var(--text-muted)" },
+      { tag: t.comment, color: "var(--text-muted)" },
+      { tag: t.strikethrough, color: "var(--text-muted)", textDecoration: "line-through" },
+      { tag: t.special(t.string), color: "var(--accent)" },
+      { tag: t.processingInstruction, color: "var(--accent)" },
+      { tag: t.content, color: "var(--text-main)" }
     ]);
 
     const theme = EditorView.theme({
-      "&": { backgroundColor: "#1e1e1e", color: "#d4d4d4" },
-      ".cm-content": { caretColor: "#aeafad" },
-      ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#aeafad" },
-      "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": { backgroundColor: "#264f78" },
-      ".cm-gutters": { backgroundColor: "#1e1e1e", color: "#858585", border: "none" },
-      ".cm-activeLine": { backgroundColor: "transparent !important" },
-      ".cm-activeLineGutter": { backgroundColor: "transparent !important", color: "#d4d4d4" }
-    }, { dark: true });
+      "&": { backgroundColor: "var(--bg-editor)", color: "var(--text-main)" },
+      "&.cm-focused": { outline: "none" },
+      ".cm-content": { caretColor: "var(--text-main)", color: "var(--text-main)" },
+      ".cm-cursor, .cm-dropCursor": { borderLeftColor: "var(--text-main)" },
+      "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": { backgroundColor: "var(--accent) !important", opacity: "0.2" },
+      ".cm-placeholder": { color: "var(--text-muted) !important" },
+      ".cm-gutters": { backgroundColor: "var(--cm-gutter-bg)", color: "var(--cm-gutter-text)", border: "none" },
+      ".cm-activeLine": { backgroundColor: "rgba(128, 128, 128, 0.05) !important" },
+      ".cm-activeLineGutter": { backgroundColor: "var(--cm-gutter-bg) !important", color: "var(--text-main)" }
+    });
 
     this.view = new EditorView({
       state: EditorState.create({

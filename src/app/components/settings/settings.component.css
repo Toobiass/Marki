@@ -1,0 +1,161 @@
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.settings-modal {
+    background: var(--bg-editor);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 450px;
+    max-width: 90vw;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    color: var(--text-main);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.settings-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--text-main);
+}
+
+.settings-content {
+    padding: 24px;
+}
+
+.settings-group {
+    margin-bottom: 24px;
+}
+
+.settings-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.folder-picker {
+    display: flex;
+    gap: 8px;
+}
+
+.folder-picker input {
+    flex: 1;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.folder-picker button {
+    background: var(--border);
+    border: none;
+    border-radius: 6px;
+    padding: 0 16px;
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.folder-picker button:hover {
+    background: var(--text-muted);
+    color: #fff;
+}
+
+.description {
+    margin: 6px 0 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.theme-picker {
+    display: flex;
+    gap: 12px;
+}
+
+.theme-picker button {
+    flex: 1;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.theme-picker button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.settings-footer {
+    padding: 12px 24px;
+    background: var(--bg-dark);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

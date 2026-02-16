@@ -27,3 +27,27 @@
 .editor-pane {
     border-right: 1px solid var(--border);
 }
+
+.settings-gear {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-editor);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 100;
+}
+
+.settings-gear:hover {
+    background: var(--border);
+    color: var(--accent);
+    transform: rotate(30deg);
+}

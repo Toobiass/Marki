@@ -8,18 +8,18 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgba(121, 121, 121, 0.2);
+    background-color: var(--border);
     border-radius: 4px;
     border: 2px solid transparent;
     background-clip: content-box;
 }
 
 .pane:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(121, 121, 121, 0.4);
+    background-color: var(--text-muted);
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background-color: rgba(121, 121, 121, 0.7);
+    background-color: var(--accent);
 }
 
 .preview-pane::-webkit-scrollbar {
@@ -31,12 +31,29 @@
     background: transparent;
 }
 
-:root {
+body.theme-dark {
     --bg-dark: #121212;
     --bg-editor: #1e1e1e;
     --text-main: #d4d4d4;
     --accent: #4fc3f7;
     --border: #2d2d2d;
+    --text-muted: #858585;
+    --cm-gutter-bg: #1e1e1e;
+    --cm-gutter-text: #858585;
+}
+
+body.theme-light {
+    --bg-dark: #ffffff;
+    --bg-editor: #ffffff;
+    --text-main: #000000;
+    --accent: #0078d4;
+    --border: #e5e5e5;
+    --text-muted: #666666;
+    --cm-gutter-bg: #f3f3f3;
+    --cm-gutter-text: #929292;
+}
+
+:root {
     --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
