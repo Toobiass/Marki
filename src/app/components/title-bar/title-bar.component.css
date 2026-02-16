@@ -10,7 +10,7 @@
 
 .doc-title-text {
     font-size: 12px;
-    color: #858585;
+    color: var(--text-muted);
     max-width: 90%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -21,7 +21,7 @@
 }
 
 .unsaved-dot {
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 18px;
     line-height: 0;
     display: inline-block;

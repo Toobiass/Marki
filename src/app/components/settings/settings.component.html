@@ -1,0 +1,31 @@
+@if (isVisible()) {
+<div class="settings-overlay" (click)="isVisible.set(false)">
+    <div class="settings-modal" (click)="$event.stopPropagation()">
+        <header class="settings-header">
+            <h2>Settings</h2>
+            <button class="close-btn" (click)="isVisible.set(false)">×</button>
+        </header>
+
+        <section class="settings-content">
+            <div class="settings-group">
+                <label>Standard Folder</label>
+                <div class="folder-picker">
+                    <input type="text" [value]="settingsService.standardFolder()" readonly
+                        placeholder="No folder selected">
+                    <button (click)="selectFolder()">Browse</button>
+                </div>
+                <p class="description">New files will be saved here by default.</p>
+            </div>
+
+            <div class="settings-group">
+                <label>Theme</label>
+                <div class="theme-picker">
+                    <button [class.active]="settingsService.theme() === 'light'"
+                        (click)="setTheme('light')">Light</button>
+                    <button [class.active]="settingsService.theme() === 'dark'" (click)="setTheme('dark')">Dark</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+}

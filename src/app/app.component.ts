@@ -4,26 +4,27 @@ import { EditorComponent } from './components/editor/editor.component';
 import { PreviewComponent } from './components/preview/preview.component';
 import { EditorService } from './services/editor.service';
 import { ElectronService } from './services/electron.service';
+import { SettingsService } from './services/settings.service';
 import { QuickOpenComponent } from './components/quick-open/quick-open.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TitleBarComponent, EditorComponent, PreviewComponent, QuickOpenComponent],
+  imports: [TitleBarComponent, EditorComponent, PreviewComponent, QuickOpenComponent, SettingsComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   @ViewChild(QuickOpenComponent) quickOpen!: QuickOpenComponent;
+  @ViewChild(SettingsComponent) settings!: SettingsComponent;
 
   private editorService = inject(EditorService);
   private electronService = inject(ElectronService);
+  private settingsService = inject(SettingsService);
 
-  ngOnInit() {
-    const savedPath = localStorage.getItem('marki-path');
-    if (savedPath) {
-      this.electronService.log("savedPath: " + savedPath);
-    }
+  async ngOnInit() {
+    await this.settingsService.loadSettings();
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -43,6 +44,9 @@ export class AppComponent implements OnInit {
       } else if (key === 'p') {
         event.preventDefault();
         await this.handleSelectFolder();
+      } else if (key === ',') {
+        event.preventDefault();
+        this.settings.toggle();
       }
     }
   }
@@ -75,7 +79,7 @@ export class AppComponent implements OnInit {
   async handleSelectFolder() {
     const filePath = await this.electronService.selectFolder();
     if (filePath) {
-      localStorage.setItem('marki-path', filePath);
+      await this.settingsService.setStandardFolder(filePath);
       this.electronService.log("Standard folder updated!");
     }
   }

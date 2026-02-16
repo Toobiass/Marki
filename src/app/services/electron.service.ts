@@ -18,6 +18,9 @@ export interface ElectronAPI {
   saveFile: (data: { content: string; existingPath: string | null; suggestedName: string }) => Promise<FileSaveResult>;
   getRecentFiles: () => Promise<string[]>;
   readFilePath: (path: string) => Promise<FileOpenResult | null>;
+  getSettings: () => Promise<any>;
+  setSetting: (key: string, value: any) => Promise<boolean>;
+  setNativeTheme: (theme: string) => void;
 }
 
 declare global {
@@ -56,5 +59,17 @@ export class ElectronService {
   }
   async readFilePath(path: string) {
     return window.electronAPI.readFilePath(path);
+  }
+
+  async getSettings() {
+    return window.electronAPI?.getSettings() || { standardFolder: '', theme: 'dark' };
+  }
+
+  async setSetting(key: string, value: any) {
+    return window.electronAPI?.setSetting(key, value) || false;
+  }
+
+  setNativeTheme(theme: string) {
+    window.electronAPI?.setNativeTheme(theme);
   }
 }

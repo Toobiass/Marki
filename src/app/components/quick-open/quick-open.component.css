@@ -2,38 +2,127 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.4);
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding-top: 15vh;
-    z-index: 9999;
+    z-index: 1000;
+    animation: fadeIn 0.15s ease-out;
 }
 
 .modal {
-    background: #1e1e1e;
-    width: 500px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.item {
-    padding: 16px 20px;
-    color: #ccc;
-    cursor: pointer;
-}
-
-.item.selected {
-    background: #444;
-    color: white;
+    background: var(--bg-editor);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 600px;
+    max-width: 90vw;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    color: var(--text-main);
+    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .header {
-    padding: 8px 16px;
-    color: #666;
-    font-size: 0.9rem;
-    text-transform: uppercase;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--text-main);
+}
+
+.list-content {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.item {
+    padding: 12px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.05);
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+.item .file-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.item .file-path {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item.selected {
+    background: rgba(128, 128, 128, 0.15);
+}
+
+.item.selected .file-name {
+    color: var(--text-main);
+}
+
+.item.selected .file-path {
+    color: var(--text-muted);
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
