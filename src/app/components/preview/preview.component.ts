@@ -1,4 +1,6 @@
-import { Component, OnInit, ElementRef, ViewChild, inject, effect } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { switchMap, from, combineLatest } from 'rxjs';
 import { EditorService } from '../../services/editor.service';
 import { ElectronService } from '../../services/electron.service';
 import { marked } from 'marked';
@@ -12,45 +14,59 @@ import { marked } from 'marked';
 })
 export class PreviewComponent {
   @ViewChild('previewContainer') previewContainer!: ElementRef;
-  renderedHtml: string = '';
+
   private editorService = inject(EditorService);
   private electronService = inject(ElectronService);
   private isSyncing = false;
 
-  constructor() {
-    // Re-render when content signal changes
-    effect(async () => {
-      const content = this.editorService.content();
-      const filePath = this.editorService.filePath();
+  // Observable combining content and path
+  private renderParams$ = combineLatest([
+    toObservable(this.editorService.content),
+    toObservable(this.editorService.filePath)
+  ]);
 
+  // Modern Angular way: transform the observable stream into a signal
+  renderedHtml = toSignal(
+    this.renderParams$.pipe(
+      switchMap(([content, filePath]) => from(this.renderMarkdown(content, filePath)))
+    ),
+    { initialValue: '' }
+  );
+
+  private async renderMarkdown(content: string, filePath: string | null): Promise<string> {
+    try {
       let baseDir = '';
       if (filePath) {
-        baseDir = filePath.substring(0, Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\')) + 1);
+        // Normalize separators and get directory
+        const normalizedPath = filePath.replace(/\\/g, '/');
+        baseDir = normalizedPath.substring(0, normalizedPath.lastIndexOf('/') + 1);
       } else {
         const settings = await this.electronService.getSettings();
-        baseDir = settings.standardFolder || '';
-      }
-
-      if (baseDir && !baseDir.endsWith('/') && !baseDir.endsWith('\\')) {
-        baseDir += '/';
+        baseDir = settings.standardFolder ? settings.standardFolder.replace(/\\/g, '/') : '';
+        if (baseDir && !baseDir.endsWith('/')) baseDir += '/';
       }
 
       const renderer = new marked.Renderer();
       const originalImage = renderer.image.bind(renderer);
 
-      renderer.image = (token) => {
+      renderer.image = (token: any) => {
         let href = token.href;
         // If it's a relative path and we have a baseDir, make it absolute for the preview
         if (href && !href.startsWith('http') && !href.startsWith('file://') && !href.startsWith('/') && !href.includes(':')) {
-          const absolutePath = baseDir + href;
-          // On Windows, prepend file:/// and replace backslashes
-          token.href = 'file:///' + absolutePath.replace(/\\/g, '/');
+          const isAbsolutePath = href.includes(':') || href.startsWith('/');
+          if (!isAbsolutePath && baseDir) {
+            const absolutePath = baseDir + href;
+            token.href = 'file:///' + absolutePath.replace(/\\/g, '/').replace(/^\/+/, '/');
+          }
         }
         return originalImage(token);
       };
 
-      this.renderedHtml = await marked.parse(content, { renderer });
-    });
+      return await marked.parse(content || '', { renderer });
+    } catch (err) {
+      console.error('[Preview] Render error:', err);
+      return await marked.parse(content || '');
+    }
   }
 
   onScroll() {

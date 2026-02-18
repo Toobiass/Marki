@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { TitleBarComponent } from './components/title-bar/title-bar.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { PreviewComponent } from './components/preview/preview.component';
@@ -16,7 +16,12 @@ import { SettingsComponent } from './components/settings/settings.component';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  viewMode = signal<'editor' | 'editor-large' | 'split' | 'preview-large' | 'preview'>('split');
+
+  @ViewChild(EditorComponent) editor!: EditorComponent;
+
   @ViewChild(QuickOpenComponent) quickOpen!: QuickOpenComponent;
+
   @ViewChild(SettingsComponent) settings!: SettingsComponent;
 
   private editorService = inject(EditorService);
@@ -25,29 +30,67 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     await this.settingsService.loadSettings();
+    window.addEventListener('keydown', (event) => this.handleKeyboardEvent(event), { capture: true });
   }
 
-  @HostListener('window:keydown', ['$event'])
   async handleKeyboardEvent(event: KeyboardEvent) {
     if (event.ctrlKey) {
+      if (event.key === 'ArrowLeft' && event.altKey) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        this.shiftLayout('left');
+        return;
+      } else if (event.key === 'ArrowRight' && event.altKey) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        this.shiftLayout('right');
+        return;
+      }
+
       const key = event.key.toLowerCase();
       if (key === 's') {
         event.preventDefault();
+        event.stopPropagation();
         await this.handleSave();
       } else if (key === 'o') {
         event.preventDefault();
+        event.stopPropagation();
         event.stopImmediatePropagation();
         this.quickOpen.handleTrigger();
       } else if (key === 'n') {
         event.preventDefault();
+        event.stopPropagation();
         this.handleNew();
       } else if (key === 'p') {
         event.preventDefault();
+        event.stopPropagation();
         await this.handleSelectFolder();
       } else if (key === ',') {
         event.preventDefault();
+        event.stopPropagation();
         this.settings.toggle();
       }
+    }
+  }
+
+  shiftLayout(direction: 'left' | 'right') {
+    const current = this.viewMode();
+    const modes: ('editor' | 'editor-large' | 'split' | 'preview-large' | 'preview')[] =
+      ['editor', 'editor-large', 'split', 'preview-large', 'preview'];
+
+    let index = modes.indexOf(current);
+    if (direction === 'left') {
+      index = Math.max(0, index - 1);
+    } else {
+      index = Math.min(modes.length - 1, index + 1);
+    }
+
+    this.viewMode.set(modes[index]);
+
+    if (this.viewMode() !== 'preview') {
+      setTimeout(() => this.editor.focus(), 300); // Wait for transition
     }
   }
 

@@ -41,6 +41,12 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
     if (this.view) this.view.destroy();
   }
 
+  focus() {
+    if (this.view) {
+      this.view.focus();
+    }
+  }
+
   private initEditor() {
     const highlightStyle = HighlightStyle.define([
       { tag: t.heading, color: "var(--accent)", fontWeight: "bold" },
