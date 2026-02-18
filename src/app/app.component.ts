@@ -30,34 +30,47 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     await this.settingsService.loadSettings();
+    window.addEventListener('keydown', (event) => this.handleKeyboardEvent(event), { capture: true });
   }
 
-  @HostListener('window:keydown', ['$event'])
   async handleKeyboardEvent(event: KeyboardEvent) {
     if (event.ctrlKey) {
+      if (event.key === 'ArrowLeft' && event.altKey) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        this.shiftLayout('left');
+        return;
+      } else if (event.key === 'ArrowRight' && event.altKey) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        this.shiftLayout('right');
+        return;
+      }
+
       const key = event.key.toLowerCase();
       if (key === 's') {
         event.preventDefault();
+        event.stopPropagation();
         await this.handleSave();
       } else if (key === 'o') {
         event.preventDefault();
+        event.stopPropagation();
         event.stopImmediatePropagation();
         this.quickOpen.handleTrigger();
       } else if (key === 'n') {
         event.preventDefault();
+        event.stopPropagation();
         this.handleNew();
       } else if (key === 'p') {
         event.preventDefault();
+        event.stopPropagation();
         await this.handleSelectFolder();
       } else if (key === ',') {
         event.preventDefault();
+        event.stopPropagation();
         this.settings.toggle();
-      } else if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        this.shiftLayout('left');
-      } else if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        this.shiftLayout('right');
       }
     }
   }
