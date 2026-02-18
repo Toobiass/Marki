@@ -74,6 +74,7 @@ ipcMain.handle('file:open', async () => {
 });
 
 ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName }) => {
+    const isFirstSave = !existingPath;
     let savePath = existingPath;
 
     if (!savePath) {
@@ -92,6 +93,31 @@ ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName
     try {
         fs.writeFileSync(savePath, content, 'utf8');
         addRecentFile(savePath);
+
+        if (isFirstSave) {
+            const targetDir = path.dirname(savePath);
+            const standardDir = store.get('standard-folder') || app.getPath('documents');
+
+            if (targetDir !== standardDir) {
+                const imageRegex = /!\[alt text\]\((image_\d{4}-\d{2}-\d{2}T[^)]+\.png)\)/g;
+                let match;
+                while ((match = imageRegex.exec(content)) !== null) {
+                    const imageName = match[1];
+                    const sourcePath = path.join(standardDir, imageName);
+                    const destPath = path.join(targetDir, imageName);
+
+                    if (fs.existsSync(sourcePath) && !fs.existsSync(destPath)) {
+                        try {
+                            fs.copyFileSync(sourcePath, destPath);
+                            console.log(`Migrated image: ${imageName} to ${targetDir}`);
+                        } catch (copyErr) {
+                            console.error(`Failed to migrate image ${imageName}:`, copyErr);
+                        }
+                    }
+                }
+            }
+        }
+
         return { success: true, filePath: savePath };
     } catch (err) {
         console.error("Save failed:", err);
@@ -108,6 +134,33 @@ ipcMain.handle('file:read-path', async (event, filePath) => {
         addRecentFile(filePath); // Auch beim direkten Öffnen tracken
         return { filePath, content };
     } catch (err) { return null; }
+});
+
+ipcMain.handle('file:save-image', async (event, { arrayBuffer, currentFilePath }) => {
+    let targetDir;
+
+    if (currentFilePath) {
+        targetDir = path.dirname(currentFilePath);
+    } else {
+        targetDir = store.get('standard-folder') || app.getPath('documents');
+    }
+
+    if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const randomStr = Math.random().toString(36).substring(2, 7);
+    const fileName = `image_${timestamp}_${randomStr}.png`;
+    const fullPath = path.join(targetDir, fileName);
+
+    try {
+        fs.writeFileSync(fullPath, Buffer.from(arrayBuffer));
+        return { success: true, fileName, fullPath };
+    } catch (err) {
+        console.error("Image save failed:", err);
+        return { success: false, error: err.message };
+    }
 });
 
 ipcMain.handle('settings:get', (event) => {

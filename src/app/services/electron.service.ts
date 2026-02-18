@@ -16,6 +16,7 @@ export interface ElectronAPI {
   selectFolder: () => Promise<string | null>;
   openFile: () => Promise<FileOpenResult | null>;
   saveFile: (data: { content: string; existingPath: string | null; suggestedName: string }) => Promise<FileSaveResult>;
+  saveImage: (data: { arrayBuffer: ArrayBuffer; currentFilePath: string | null }) => Promise<{ success: boolean; fileName?: string; fullPath?: string; error?: string }>;
   getRecentFiles: () => Promise<string[]>;
   readFilePath: (path: string) => Promise<FileOpenResult | null>;
   getSettings: () => Promise<any>;
@@ -54,6 +55,11 @@ export class ElectronService {
   async saveFile(content: string, existingPath: string | null, suggestedName: string): Promise<FileSaveResult> {
     return window.electronAPI?.saveFile({ content, existingPath, suggestedName }) || { success: false, error: 'Electron API not available' };
   }
+
+  async saveImage(arrayBuffer: ArrayBuffer, currentFilePath: string | null) {
+    return window.electronAPI?.saveImage({ arrayBuffer, currentFilePath });
+  }
+
   async getRecentFiles() {
     return window.electronAPI.getRecentFiles();
   }
