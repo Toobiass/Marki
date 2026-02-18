@@ -1,4 +1,6 @@
-import { Component, OnInit, ElementRef, ViewChild, inject, effect, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { switchMap, from, combineLatest } from 'rxjs';
 import { EditorService } from '../../services/editor.service';
 import { ElectronService } from '../../services/electron.service';
 import { marked } from 'marked';
@@ -12,23 +14,26 @@ import { marked } from 'marked';
 })
 export class PreviewComponent {
   @ViewChild('previewContainer') previewContainer!: ElementRef;
-  renderedHtml = signal<string>('');
+
   private editorService = inject(EditorService);
   private electronService = inject(ElectronService);
   private isSyncing = false;
 
-  constructor() {
-    // Re-render when content signal changes
-    effect(() => {
-      const content = this.editorService.content();
-      const filePath = this.editorService.filePath();
+  // Observable combining content and path
+  private renderParams$ = combineLatest([
+    toObservable(this.editorService.content),
+    toObservable(this.editorService.filePath)
+  ]);
 
-      // Use an IIFE or a separate method for async work
-      this.renderMarkdown(content, filePath);
-    });
-  }
+  // Modern Angular way: transform the observable stream into a signal
+  renderedHtml = toSignal(
+    this.renderParams$.pipe(
+      switchMap(([content, filePath]) => from(this.renderMarkdown(content, filePath)))
+    ),
+    { initialValue: '' }
+  );
 
-  private async renderMarkdown(content: string, filePath: string | null) {
+  private async renderMarkdown(content: string, filePath: string | null): Promise<string> {
     try {
       let baseDir = '';
       if (filePath) {
@@ -48,7 +53,6 @@ export class PreviewComponent {
         let href = token.href;
         // If it's a relative path and we have a baseDir, make it absolute for the preview
         if (href && !href.startsWith('http') && !href.startsWith('file://') && !href.startsWith('/') && !href.includes(':')) {
-          // Fix: ensure we don't double up on file:/// or handle absolute paths with drive letters
           const isAbsolutePath = href.includes(':') || href.startsWith('/');
           if (!isAbsolutePath && baseDir) {
             const absolutePath = baseDir + href;
@@ -58,12 +62,10 @@ export class PreviewComponent {
         return originalImage(token);
       };
 
-      const html = await marked.parse(content || '', { renderer });
-      this.renderedHtml.set(html);
+      return await marked.parse(content || '', { renderer });
     } catch (err) {
       console.error('[Preview] Render error:', err);
-      const html = await marked.parse(content || '');
-      this.renderedHtml.set(html);
+      return await marked.parse(content || '');
     }
   }
 
