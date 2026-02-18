@@ -23,33 +23,41 @@ export class PreviewComponent {
       const content = this.editorService.content();
       const filePath = this.editorService.filePath();
 
-      let baseDir = '';
-      if (filePath) {
-        baseDir = filePath.substring(0, Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\')) + 1);
-      } else {
-        const settings = await this.electronService.getSettings();
-        baseDir = settings.standardFolder || '';
-      }
-
-      if (baseDir && !baseDir.endsWith('/') && !baseDir.endsWith('\\')) {
-        baseDir += '/';
-      }
-
-      const renderer = new marked.Renderer();
-      const originalImage = renderer.image.bind(renderer);
-
-      renderer.image = (token) => {
-        let href = token.href;
-        // If it's a relative path and we have a baseDir, make it absolute for the preview
-        if (href && !href.startsWith('http') && !href.startsWith('file://') && !href.startsWith('/') && !href.includes(':')) {
-          const absolutePath = baseDir + href;
-          // On Windows, prepend file:/// and replace backslashes
-          token.href = 'file:///' + absolutePath.replace(/\\/g, '/');
+      try {
+        let baseDir = '';
+        if (filePath) {
+          // Normalize separators and get directory
+          const normalizedPath = filePath.replace(/\\/g, '/');
+          baseDir = normalizedPath.substring(0, normalizedPath.lastIndexOf('/') + 1);
+        } else {
+          const settings = await this.electronService.getSettings();
+          baseDir = settings.standardFolder ? settings.standardFolder.replace(/\\/g, '/') : '';
+          if (baseDir && !baseDir.endsWith('/')) baseDir += '/';
         }
-        return originalImage(token);
-      };
 
-      this.renderedHtml = await marked.parse(content, { renderer });
+        const renderer = new marked.Renderer();
+        const originalImage = renderer.image.bind(renderer);
+
+        renderer.image = (token: any) => {
+          let href = token.href;
+          // If it's a relative path and we have a baseDir, make it absolute for the preview
+          if (href && !href.startsWith('http') && !href.startsWith('file://') && !href.startsWith('/') && !href.includes(':')) {
+            // Fix: ensure we don't double up on file:/// or handle absolute paths with drive letters
+            const isAbsolutePath = href.includes(':') || href.startsWith('/');
+            if (!isAbsolutePath && baseDir) {
+              const absolutePath = baseDir + href;
+              token.href = 'file:///' + absolutePath.replace(/\\/g, '/').replace(/^\/+/, '/');
+            }
+          }
+          return originalImage(token);
+        };
+
+        this.renderedHtml = await marked.parse(content, { renderer });
+      } catch (err) {
+        console.error('Render error:', err);
+        // Fallback to simple parse if custom renderer fails
+        this.renderedHtml = await marked.parse(content);
+      }
     });
   }
 
