@@ -57,3 +57,11 @@
     color: var(--accent);
     text-decoration: underline;
 }
+
+:host ::ng-deep #preview img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    margin: 20px 0;
+}

@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject, effect } from '@angular/core';
 import { EditorService } from '../../services/editor.service';
+import { ElectronService } from '../../services/electron.service';
 import { EditorView, basicSetup } from 'codemirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { EditorState } from '@codemirror/state';
@@ -17,6 +18,7 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
   @ViewChild('editorContainer') editorContainer!: ElementRef;
   private view!: EditorView;
   private editorService = inject(EditorService);
+  private electronService = inject(ElectronService);
   private isSyncing = false;
 
   constructor() {
@@ -86,6 +88,9 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
           EditorView.domEventHandlers({
             scroll: (event, view) => {
               this.onScroll(view);
+            },
+            paste: (event, view) => {
+              this.handlePaste(event, view);
             }
           })
         ]
@@ -106,5 +111,41 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
     if (preview && !isNaN(percentage)) {
       preview.scrollTop = percentage * (preview.scrollHeight - preview.clientHeight);
     }
+  }
+
+  private handlePaste(event: ClipboardEvent, view: EditorView): boolean {
+    const items = event.clipboardData?.items;
+    if (!items) return false;
+
+    let handled = false;
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.type.indexOf('image') !== -1) {
+        event.preventDefault();
+        handled = true;
+        const file = item.getAsFile();
+        if (!file) continue;
+
+        this.electronService.log(`Image paste detected: ${item.type}`);
+
+        file.arrayBuffer().then(async (arrayBuffer) => {
+          const currentFilePath = this.editorService.filePath();
+          const result = await this.electronService.saveImage(arrayBuffer, currentFilePath);
+
+          if (result && result.success && result.fileName) {
+            const markdownImage = `![alt text](${result.fileName})`;
+            const pos = view.state.selection.main.head;
+            view.dispatch({
+              changes: { from: pos, to: pos, insert: markdownImage },
+              selection: { anchor: pos + markdownImage.length }
+            });
+            this.electronService.log(`Image saved and inserted: ${result.fileName}`);
+          } else {
+            this.electronService.log(`Failed to save image: ${result?.error}`);
+          }
+        });
+      }
+    }
+    return handled;
   }
 }

@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     selectFolder: () => ipcRenderer.invoke('dialog:openDirectory'),
     openFile: () => ipcRenderer.invoke('file:open'),
     saveFile: (data) => ipcRenderer.invoke('file:save', data),
+    saveImage: (data) => ipcRenderer.invoke('file:save-image', data),
     getRecentFiles: () => ipcRenderer.invoke('file:get-recents'),
     readFilePath: (path) => ipcRenderer.invoke('file:read-path', path),
     getSettings: () => ipcRenderer.invoke('settings:get'),
