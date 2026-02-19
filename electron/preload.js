@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getSettings: () => ipcRenderer.invoke('settings:get'),
     setSetting: (key, value) => ipcRenderer.invoke('settings:set', { key, value }),
     setNativeTheme: (theme) => ipcRenderer.send('theme:set-native', theme),
+    getPdfPath: (data) => ipcRenderer.invoke('file:get-pdf-path', data),
+    writeBinary: (data) => ipcRenderer.invoke('file:write-binary', data),
 });

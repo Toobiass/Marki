@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, from, combineLatest } from 'rxjs';
 import { EditorService } from '../../services/editor.service';
@@ -81,5 +81,95 @@ export class PreviewComponent {
     if (editor && !isNaN(percentage)) {
       editor.scrollTop = percentage * (editor.scrollHeight - editor.clientHeight);
     }
+  }
+
+  async exportToPdf() {
+    const element = document.getElementById('preview');
+    if (!element) return;
+
+    // Ensure all images are loaded before generating PDF
+    const images = Array.from(element.getElementsByTagName('img'));
+    await Promise.all(images.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    }));
+
+    const suggestedName = this.getFileNameWithoutExtension();
+
+    // 1. Get save path from electron BEFORE showing loading
+    const filePath = await this.electronService.getPdfPath(suggestedName);
+    if (!filePath) return;
+
+    // 2. Start loading
+    this.editorService.exporting.set(true);
+
+    // Give the UI a moment to render the loader before the heavy work starts
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const opt = {
+      margin: 15,
+      filename: filePath.split(/[\\/]/).pop(),
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        letterRendering: true,
+        allowTaint: true,
+        onclone: (clonedDoc: Document) => {
+          // Force body to be light theme to ensure CSS variables work correctly
+          clonedDoc.body.classList.remove('theme-dark');
+          clonedDoc.body.classList.add('theme-light');
+
+          const preview = clonedDoc.getElementById('preview');
+          if (preview) {
+            preview.classList.add('theme-light');
+            // Ensure background is explicitly white for the PDF content
+            preview.style.background = '#ffffff';
+          }
+        }
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    try {
+      this.electronService.log('Generating PDF...');
+
+      // Lazy load html2pdf
+      // @ts-ignore
+      const html2pdf = (await import('html2pdf.js')).default;
+
+      const pdfBuffer = await html2pdf().from(element).set(opt).output('arraybuffer');
+      const result = await this.electronService.writeBinary(filePath, pdfBuffer);
+
+      if (result.success) {
+        this.electronService.log(`Exported PDF to: ${filePath}`);
+      }
+    } catch (err) {
+      this.electronService.log(`PDF Export Error: ${err}`);
+      console.error('[Preview] PDF Export Error:', err);
+    } finally {
+      this.editorService.exporting.set(false);
+    }
+  }
+
+  private getFileNameWithoutExtension(): string {
+    const path = this.editorService.filePath();
+    if (path) {
+      const fileName = path.split(/[\\/]/).pop() || 'document';
+      return fileName.replace(/\.[^/.]+$/, "");
+    }
+
+    // Fallback to title based on content if no file path
+    const content = this.editorService.content();
+    const h1Match = content.match(/^#\s+(.*)$/m);
+    if (h1Match && h1Match[1]) {
+      return h1Match[1].trim().replace(/[<>:"/\\|?*]/g, '').substring(0, 50);
+    }
+    return 'untitled';
   }
 }

@@ -8,6 +8,7 @@ export class EditorService {
   content = signal<string>('');
   filePath = signal<string | null>(null);
   savedContent = signal<string>('');
+  exporting = signal<boolean>(false);
 
   // Computed signal for dirty state
   isDirty = computed(() => this.content() !== this.savedContent());

@@ -179,6 +179,27 @@ ipcMain.on('theme:set-native', (event, theme) => {
     nativeTheme.themeSource = theme;
 });
 
+ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {
+    const defaultDir = store.get('standard-folder') || app.getPath('documents');
+    const { canceled, filePath } = await dialog.showSaveDialog({
+        title: 'Export to PDF',
+        defaultPath: path.join(defaultDir, `${suggestedName}.pdf`),
+        filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    });
+
+    return canceled ? null : filePath;
+});
+
+ipcMain.handle('file:write-binary', async (event, { filePath, arrayBuffer }) => {
+    try {
+        fs.writeFileSync(filePath, Buffer.from(arrayBuffer));
+        return { success: true, filePath };
+    } catch (err) {
+        console.error("Binary write failed:", err);
+        return { success: false, error: err.message };
+    }
+});
+
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
