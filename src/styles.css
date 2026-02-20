@@ -42,7 +42,8 @@ body.theme-dark {
     --cm-gutter-text: #858585;
 }
 
-body.theme-light {
+body.theme-light,
+.theme-light {
     --bg-dark: #ffffff;
     --bg-editor: #ffffff;
     --text-main: #000000;

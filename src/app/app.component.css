@@ -4,6 +4,7 @@
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    position: relative;
 }
 
 .panes-row {
@@ -101,4 +102,47 @@
     background: var(--border);
     color: var(--accent);
     transform: rotate(30deg);
+}
+
+.export-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    /* Slightly darker for better contrast */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    /* Extremely high to ensure visibility */
+    backdrop-filter: blur(8px);
+    /* More blur for a premium feel */
+    color: white;
+    gap: 20px;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.loader {
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.2);
+    border-bottom-color: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

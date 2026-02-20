@@ -14,6 +14,7 @@ function createWindow() {
         width: 1000,
         height: 700,
         title: `Marki v${packageInfo.version}`,
+        icon: path.join(__dirname, '../assets/logo.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             sandbox: false,
@@ -177,6 +178,47 @@ ipcMain.handle('settings:set', (event, { key, value }) => {
 
 ipcMain.on('theme:set-native', (event, theme) => {
     nativeTheme.themeSource = theme;
+});
+
+ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {
+    const defaultDir = store.get('standard-folder') || app.getPath('documents');
+    const { canceled, filePath } = await dialog.showSaveDialog({
+        title: 'Export to PDF',
+        defaultPath: path.join(defaultDir, `${suggestedName}.pdf`),
+        filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    });
+
+    return canceled ? null : filePath;
+});
+
+ipcMain.handle('file:print-to-pdf', async (event, { html, filePath }) => {
+    const printWin = new BrowserWindow({
+        show: false,
+        webPreferences: {
+            offscreen: true,
+            webSecurity: false
+        }
+    });
+
+    try {
+        await printWin.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const data = await printWin.webContents.printToPDF({
+            margins: { top: 0, bottom: 0, left: 0, right: 0 },
+            printBackground: true,
+            pageSize: 'A4'
+        });
+
+        fs.writeFileSync(filePath, data);
+        return { success: true, filePath };
+    } catch (err) {
+        console.error('PDF generation failed:', err);
+        return { success: false, error: err.message };
+    } finally {
+        printWin.close();
+    }
 });
 
 app.whenReady().then(createWindow);

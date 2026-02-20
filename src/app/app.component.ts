@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject, signal, computed } from '@angular/core';
 import { TitleBarComponent } from './components/title-bar/title-bar.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { PreviewComponent } from './components/preview/preview.component';
@@ -21,8 +21,10 @@ export class AppComponent implements OnInit {
   @ViewChild(EditorComponent) editor!: EditorComponent;
 
   @ViewChild(QuickOpenComponent) quickOpen!: QuickOpenComponent;
-
+  @ViewChild(PreviewComponent) preview!: PreviewComponent;
   @ViewChild(SettingsComponent) settings!: SettingsComponent;
+
+  isExporting = computed(() => this.editorService.exporting());
 
   private editorService = inject(EditorService);
   private electronService = inject(ElectronService);
@@ -71,6 +73,10 @@ export class AppComponent implements OnInit {
         event.preventDefault();
         event.stopPropagation();
         this.settings.toggle();
+      } else if (key === 'e') {
+        event.preventDefault();
+        event.stopPropagation();
+        await this.preview.exportToPdf();
       }
     }
   }
