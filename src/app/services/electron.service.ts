@@ -23,7 +23,7 @@ export interface ElectronAPI {
   setSetting: (key: string, value: any) => Promise<boolean>;
   setNativeTheme: (theme: string) => void;
   getPdfPath: (data: { suggestedName: string }) => Promise<string | null>;
-  writeBinary: (data: { filePath: string; arrayBuffer: ArrayBuffer }) => Promise<FileSaveResult>;
+  printToPdf: (data: { html: string; filePath: string }) => Promise<FileSaveResult>;
 }
 
 declare global {
@@ -85,7 +85,7 @@ export class ElectronService {
     return window.electronAPI?.getPdfPath({ suggestedName }) || null;
   }
 
-  async writeBinary(filePath: string, arrayBuffer: ArrayBuffer): Promise<FileSaveResult> {
-    return window.electronAPI?.writeBinary({ filePath, arrayBuffer }) || { success: false, error: 'Electron API not available' };
+  async printToPdf(html: string, filePath: string): Promise<FileSaveResult> {
+    return window.electronAPI?.printToPdf({ html, filePath }) || { success: false, error: 'Electron API not available' };
   }
 }

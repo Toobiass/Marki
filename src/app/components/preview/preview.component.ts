@@ -109,42 +109,60 @@ export class PreviewComponent {
     // Give the UI a moment to render the loader before the heavy work starts
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const opt = {
-      margin: 15,
-      filename: filePath.split(/[\\/]/).pop(),
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        letterRendering: true,
-        allowTaint: true,
-        onclone: (clonedDoc: Document) => {
-          // Force body to be light theme to ensure CSS variables work correctly
-          clonedDoc.body.classList.remove('theme-dark');
-          clonedDoc.body.classList.add('theme-light');
-
-          const preview = clonedDoc.getElementById('preview');
-          if (preview) {
-            preview.classList.add('theme-light');
-            // Ensure background is explicitly white for the PDF content
-            preview.style.background = '#ffffff';
-          }
-        }
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-
     try {
       this.electronService.log('Generating PDF...');
 
-      // Lazy load html2pdf
-      // @ts-ignore
-      const html2pdf = (await import('html2pdf.js')).default;
+      const lightThemeCss = `
+        :root {
+          --bg-dark: #ffffff;
+          --bg-editor: #ffffff;
+          --text-main: #000000;
+          --accent: #0078d4;
+          --border: #e5e5e5;
+          --text-muted: #666666;
+          --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: white;
+          color: black;
+          margin: 0;
+          padding: 20mm;
+        }
+        #preview {
+          line-height: 1.5;
+          word-wrap: break-word;
+        }
+        h1 { color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        h2 { color: var(--text-main); margin-top: 1.5em; }
+        h3 { color: var(--text-main); }
+        p { margin-bottom: 16px; font-size: 11pt; }
+        code { background: #f3f3f3; color: #d63384; padding: 2px 4px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
+        blockquote { border-left: 4px solid var(--accent); margin: 0; padding-left: 20px; color: var(--text-muted); font-style: italic; }
+        a { color: var(--accent); text-decoration: underline; }
+        img { max-width: 100%; height: auto; display: block; border-radius: 8px; margin: 20px 0; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        th { background: #f8f9fa; }
+      `;
 
-      const pdfBuffer = await html2pdf().from(element).set(opt).output('arraybuffer');
-      const result = await this.electronService.writeBinary(filePath, pdfBuffer);
+      const fullHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>${lightThemeCss}</style>
+        </head>
+        <body>
+          <div id="preview">
+            ${element.innerHTML}
+          </div>
+        </body>
+        </html>
+      `;
+
+      const result = await this.electronService.printToPdf(fullHtml, filePath);
 
       if (result.success) {
         this.electronService.log(`Exported PDF to: ${filePath}`);

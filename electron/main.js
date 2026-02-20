@@ -191,13 +191,33 @@ ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {
     return canceled ? null : filePath;
 });
 
-ipcMain.handle('file:write-binary', async (event, { filePath, arrayBuffer }) => {
+ipcMain.handle('file:print-to-pdf', async (event, { html, filePath }) => {
+    const printWin = new BrowserWindow({
+        show: false,
+        webPreferences: {
+            offscreen: true,
+            webSecurity: false
+        }
+    });
+
     try {
-        fs.writeFileSync(filePath, Buffer.from(arrayBuffer));
+        await printWin.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const data = await printWin.webContents.printToPDF({
+            margins: { top: 0, bottom: 0, left: 0, right: 0 },
+            printBackground: true,
+            pageSize: 'A4'
+        });
+
+        fs.writeFileSync(filePath, data);
         return { success: true, filePath };
     } catch (err) {
-        console.error("Binary write failed:", err);
+        console.error('PDF generation failed:', err);
         return { success: false, error: err.message };
+    } finally {
+        printWin.close();
     }
 });
 

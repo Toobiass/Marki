@@ -57,11 +57,7 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": [
-              "html2pdf.js",
-              "html2canvas",
-              "jspdf"
-            ]
+            "allowedCommonJsDependencies": []
           },
           "configurations": {
             "production": {
