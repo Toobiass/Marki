@@ -14,6 +14,7 @@ function createWindow() {
         width: 1000,
         height: 700,
         title: `Marki v${packageInfo.version}`,
+        icon: path.join(__dirname, '../assets/logo.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             sandbox: false,
