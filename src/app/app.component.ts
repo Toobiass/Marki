@@ -77,6 +77,8 @@ export class AppComponent implements OnInit {
         event.preventDefault();
         event.stopPropagation();
         await this.preview.exportToPdf();
+      } else if (key === 'w') {
+        this.electronService.close();
       }
     }
   }

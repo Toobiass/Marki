@@ -24,6 +24,7 @@ export interface ElectronAPI {
   setNativeTheme: (theme: string) => void;
   getPdfPath: (data: { suggestedName: string }) => Promise<string | null>;
   printToPdf: (data: { html: string; filePath: string }) => Promise<FileSaveResult>;
+  close: () => void;
 }
 
 declare global {
@@ -87,5 +88,9 @@ export class ElectronService {
 
   async printToPdf(html: string, filePath: string): Promise<FileSaveResult> {
     return window.electronAPI?.printToPdf({ html, filePath }) || { success: false, error: 'Electron API not available' };
+  }
+
+  close() {
+    window.electronAPI?.close();
   }
 }

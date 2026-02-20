@@ -13,4 +13,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     setNativeTheme: (theme) => ipcRenderer.send('theme:set-native', theme),
     getPdfPath: (data) => ipcRenderer.invoke('file:get-pdf-path', data),
     printToPdf: (data) => ipcRenderer.invoke('file:print-to-pdf', data),
+    close: () => ipcRenderer.send('window:close'),
 });

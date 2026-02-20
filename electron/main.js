@@ -180,6 +180,11 @@ ipcMain.on('theme:set-native', (event, theme) => {
     nativeTheme.themeSource = theme;
 });
 
+ipcMain.on('window:close', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) win.close();
+});
+
 ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {
     const defaultDir = store.get('standard-folder') || app.getPath('documents');
     const { canceled, filePath } = await dialog.showSaveDialog({
