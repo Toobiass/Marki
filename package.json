@@ -1,6 +1,6 @@
 {
   "name": "marki",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Minimalist, modern and clean Markdown Editor",
   "main": "electron/main.js",
   "scripts": {

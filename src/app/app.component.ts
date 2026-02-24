@@ -5,13 +5,14 @@ import { PreviewComponent } from './components/preview/preview.component';
 import { EditorService } from './services/editor.service';
 import { ElectronService } from './services/electron.service';
 import { SettingsService } from './services/settings.service';
+import { UserAgreementComponent } from './components/user-agreement/user-agreement.component';
 import { QuickOpenComponent } from './components/quick-open/quick-open.component';
 import { SettingsComponent } from './components/settings/settings.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TitleBarComponent, EditorComponent, PreviewComponent, QuickOpenComponent, SettingsComponent],
+  imports: [TitleBarComponent, EditorComponent, PreviewComponent, QuickOpenComponent, SettingsComponent, UserAgreementComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit {
   @ViewChild(QuickOpenComponent) quickOpen!: QuickOpenComponent;
   @ViewChild(PreviewComponent) preview!: PreviewComponent;
   @ViewChild(SettingsComponent) settings!: SettingsComponent;
+  @ViewChild(UserAgreementComponent) userAgreement!: UserAgreementComponent;
 
   isExporting = computed(() => this.editorService.exporting());
 

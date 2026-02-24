@@ -168,6 +168,7 @@ ipcMain.handle('settings:get', (event) => {
     return {
         standardFolder: store.get('standard-folder') || '',
         theme: store.get('theme') || 'dark',
+        userAgreementAccepted: store.get('user-agreement-accepted') || false,
     };
 });
 

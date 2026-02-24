@@ -9,11 +9,13 @@ export class SettingsService {
 
     standardFolder = signal('');
     theme = signal('dark');
+    userAgreementAccepted = signal(false);
 
     async loadSettings() {
         const settings = await this.electron.getSettings();
         this.standardFolder.set(settings.standardFolder || '');
         this.theme.set(settings.theme || 'dark');
+        this.userAgreementAccepted.set(settings.userAgreementAccepted || false);
         this.applyTheme(this.theme());
     }
 
@@ -26,6 +28,11 @@ export class SettingsService {
         this.theme.set(theme);
         await this.electron.setSetting('theme', theme);
         this.applyTheme(theme);
+    }
+
+    async acceptUserAgreement() {
+        this.userAgreementAccepted.set(true);
+        await this.electron.setSetting('user-agreement-accepted', true);
     }
 
     private applyTheme(theme: string) {
