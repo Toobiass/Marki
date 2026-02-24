@@ -74,6 +74,9 @@ export class PreviewComponent {
       this.isSyncing = false;
       return;
     }
+    if (this.editorService.isOverlayOpen()) {
+      return;
+    }
     this.isSyncing = true;
     const source = this.previewContainer.nativeElement;
     const percentage = source.scrollTop / (source.scrollHeight - source.clientHeight);

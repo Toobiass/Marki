@@ -1,4 +1,4 @@
-import { Component, signal, inject, HostListener, Output, EventEmitter } from '@angular/core';
+import { Component, signal, inject, HostListener, Output, EventEmitter, ViewChild, ElementRef, effect } from '@angular/core';
 
 import { ElectronService } from '../../services/electron.service';
 import { EditorService } from '../../services/editor.service';
@@ -15,10 +15,13 @@ export class QuickOpenComponent {
     private editor = inject(EditorService);
 
     @Output() requestFullOpen = new EventEmitter<void>();
+    @Output() closed = new EventEmitter<void>();
+    @ViewChild('quickOpenModal') modal?: ElementRef;
 
     isVisible = signal(false);
     items = signal<any[]>([]);
     selectedIndex = signal(0);
+    private canHover = false;
 
     private lastTriggerTime = 0;
 
@@ -37,26 +40,61 @@ export class QuickOpenComponent {
 
     async openOverlay() {
         const recents = await this.electron.getRecentFiles();
-        this.items.set(recents.map(path => ({
+        const mapped = recents.map(path => ({
             name: path.split(/[\\/]/).pop(),
             path: path
-        })));
-        this.isVisible.set(true);
+        }));
+
+        this.canHover = false;
+        this.items.set(mapped);
         this.selectedIndex.set(0);
+        this.isVisible.set(true);
+        this.editor.isOverlayOpen.set(true);
+
+        setTimeout(() => {
+            this.modal?.nativeElement.focus();
+            // Enable hover after a short delay to prevent initial mouse position from jumping selection
+            setTimeout(() => this.canHover = true, 150);
+        }, 0);
     }
 
     @HostListener('window:keydown', ['$event'])
-    onKey(event: KeyboardEvent) {
+    onGlobalKey(event: KeyboardEvent) {
         if (!this.isVisible()) return;
+        if (event.key === 'Escape') {
+            this.close();
+        }
+    }
+
+    onKey(event: KeyboardEvent) {
+        const items = this.items();
+        if (!items.length) return;
 
         if (event.key === 'ArrowDown') {
-            this.selectedIndex.update(i => (i + 1) % this.items().length);
+            event.preventDefault();
+            event.stopPropagation();
+            this.selectedIndex.update(i => (i + 1) % items.length);
         } else if (event.key === 'ArrowUp') {
-            this.selectedIndex.update(i => (i - 1 + this.items().length) % this.items().length);
-        } else if (event.key === 'Escape') {
-            this.isVisible.set(false);
+            event.preventDefault();
+            event.stopPropagation();
+            this.selectedIndex.update(i => (i - 1 + items.length) % items.length);
         } else if (event.key === 'Enter') {
-            this.selectItem(this.items()[this.selectedIndex()]);
+            event.preventDefault();
+            event.stopPropagation();
+            const item = items[this.selectedIndex()];
+            if (item) this.selectItem(item);
+        }
+    }
+
+    close() {
+        this.isVisible.set(false);
+        this.editor.isOverlayOpen.set(false);
+        this.closed.emit();
+    }
+
+    onItemHover(index: number) {
+        if (this.canHover) {
+            this.selectedIndex.set(index);
         }
     }
 
@@ -64,7 +102,20 @@ export class QuickOpenComponent {
         const result = await this.electron.readFilePath(item.path);
         if (result) {
             this.editor.setFile(result.filePath, result.content);
-            this.isVisible.set(false);
+            this.close();
         }
+    }
+
+    // Proactive: Scroll selected item into view
+    constructor() {
+        effect(() => {
+            const index = this.selectedIndex();
+            if (this.isVisible()) {
+                setTimeout(() => {
+                    const selectedElem = document.querySelector('.item.selected');
+                    selectedElem?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }, 0);
+            }
+        });
     }
 }

@@ -23,6 +23,11 @@
     overflow: hidden;
     color: var(--text-main);
     animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none !important;
+}
+
+.modal:focus {
+    outline: none !important;
 }
 
 .header {
@@ -96,6 +101,10 @@
 
 .item.selected .file-path {
     color: var(--text-muted);
+}
+
+.item:focus {
+    outline: none !important;
 }
 
 .empty-state {

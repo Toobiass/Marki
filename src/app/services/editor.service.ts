@@ -9,6 +9,7 @@ export class EditorService {
   filePath = signal<string | null>(null);
   savedContent = signal<string>('');
   exporting = signal<boolean>(false);
+  isOverlayOpen = signal<boolean>(false);
 
   // Computed signal for dirty state
   isDirty = computed(() => this.content() !== this.savedContent());
