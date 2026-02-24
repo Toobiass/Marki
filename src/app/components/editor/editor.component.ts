@@ -110,6 +110,9 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
       this.isSyncing = false;
       return;
     }
+    if (this.editorService.isOverlayOpen()) {
+      return;
+    }
     this.isSyncing = true;
     const source = view.scrollDOM;
     const percentage = source.scrollTop / (source.scrollHeight - source.clientHeight);

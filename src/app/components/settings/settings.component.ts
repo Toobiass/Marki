@@ -1,6 +1,7 @@
 import { Component, signal, inject, HostListener } from '@angular/core';
 import { ElectronService } from '../../services/electron.service';
 import { SettingsService } from '../../services/settings.service';
+import { EditorService } from '../../services/editor.service';
 
 @Component({
     selector: 'app-settings',
@@ -11,12 +12,15 @@ import { SettingsService } from '../../services/settings.service';
 })
 export class SettingsComponent {
     private electron = inject(ElectronService);
+    private editor = inject(EditorService);
     public settingsService = inject(SettingsService);
 
     isVisible = signal(false);
 
     toggle() {
-        this.isVisible.update(v => !v);
+        const newState = !this.isVisible();
+        this.isVisible.set(newState);
+        this.editor.isOverlayOpen.set(newState);
     }
 
     async selectFolder() {
@@ -36,6 +40,7 @@ export class SettingsComponent {
 
         if (event.key === 'Escape') {
             this.isVisible.set(false);
+            this.editor.isOverlayOpen.set(false);
         }
     }
 }
