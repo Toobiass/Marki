@@ -9,10 +9,27 @@ try {
     require('electron-reloader')(module);
 } catch { }
 
+function getWindowDimensions(preset) {
+    const sizePreset = preset || store.get('window_size_preset') || 'medium';
+    let width = 1200;
+    let height = 800;
+
+    if (sizePreset === 'small') {
+        width = 900;
+        height = 650;
+    } else if (sizePreset === 'large') {
+        width = 1600;
+        height = 1000;
+    }
+    return { width, height };
+}
+
 function createWindow() {
+    const { width, height } = getWindowDimensions();
+
     const win = new BrowserWindow({
-        width: 1000,
-        height: 700,
+        width: width,
+        height: height,
         title: `Marki v${packageInfo.version}`,
         icon: path.join(__dirname, '../assets/logo.png'),
         webPreferences: {
@@ -169,6 +186,8 @@ ipcMain.handle('settings:get', (event) => {
         standardFolder: store.get('standard-folder') || '',
         theme: store.get('theme') || 'dark',
         userAgreementAccepted: store.get('user-agreement-accepted') || false,
+        defaultViewMode: store.get('default_view_mode') || 'split',
+        windowSizePreset: store.get('window_size_preset') || 'medium',
     };
 });
 
@@ -184,6 +203,15 @@ ipcMain.on('theme:set-native', (event, theme) => {
 ipcMain.on('window:close', () => {
     const win = BrowserWindow.getFocusedWindow();
     if (win) win.close();
+});
+
+ipcMain.on('window:apply-size-preset', (event, preset) => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) {
+        const { width, height } = getWindowDimensions(preset);
+        win.setSize(width, height);
+        win.center();
+    }
 });
 
 ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {

@@ -34,6 +34,14 @@ export class SettingsComponent {
         await this.settingsService.setTheme(theme);
     }
 
+    async setDefaultViewMode(mode: string) {
+        await this.settingsService.setDefaultViewMode(mode);
+    }
+
+    async setWindowSizePreset(preset: string) {
+        await this.settingsService.setWindowSizePreset(preset);
+    }
+
     @HostListener('window:keydown', ['$event'])
     onKey(event: KeyboardEvent) {
         if (!this.isVisible()) return;
