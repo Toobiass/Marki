@@ -25,6 +25,7 @@ export interface ElectronAPI {
   getPdfPath: (data: { suggestedName: string }) => Promise<string | null>;
   printToPdf: (data: { html: string; filePath: string }) => Promise<FileSaveResult>;
   close: () => void;
+  applySizePreset: (preset: string) => void;
 }
 
 declare global {
@@ -71,7 +72,12 @@ export class ElectronService {
   }
 
   async getSettings() {
-    return window.electronAPI?.getSettings() || { standardFolder: '', theme: 'dark' };
+    return window.electronAPI?.getSettings() || {
+      standardFolder: '',
+      theme: 'dark',
+      defaultViewMode: 'split',
+      windowSizePreset: 'medium'
+    };
   }
 
   async setSetting(key: string, value: any) {
@@ -92,5 +98,9 @@ export class ElectronService {
 
   close() {
     window.electronAPI?.close();
+  }
+
+  applySizePreset(preset: string) {
+    window.electronAPI?.applySizePreset(preset);
   }
 }

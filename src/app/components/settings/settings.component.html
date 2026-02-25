@@ -25,6 +25,32 @@
                     <button [class.active]="settingsService.theme() === 'dark'" (click)="setTheme('dark')">Dark</button>
                 </div>
             </div>
+
+            <div class="settings-group">
+                <label>Startup View</label>
+                <div class="preset-picker">
+                    <button [class.active]="settingsService.defaultViewMode() === 'editor-large'"
+                        (click)="setDefaultViewMode('editor-large')">2/3 Editor</button>
+                    <button [class.active]="settingsService.defaultViewMode() === 'split'"
+                        (click)="setDefaultViewMode('split')">Split</button>
+                    <button [class.active]="settingsService.defaultViewMode() === 'preview-large'"
+                        (click)="setDefaultViewMode('preview-large')">2/3 Preview</button>
+                </div>
+                <p class="description">Choose how the interface looks when you start Marki.</p>
+            </div>
+
+            <div class="settings-group">
+                <label>Startup Window Size</label>
+                <div class="preset-picker">
+                    <button [class.active]="settingsService.windowSizePreset() === 'small'"
+                        (click)="setWindowSizePreset('small')">Small</button>
+                    <button [class.active]="settingsService.windowSizePreset() === 'medium'"
+                        (click)="setWindowSizePreset('medium')">Medium</button>
+                    <button [class.active]="settingsService.windowSizePreset() === 'large'"
+                        (click)="setWindowSizePreset('large')">Large</button>
+                </div>
+                <p class="description">Choose the default window dimensions on startup.</p>
+            </div>
         </section>
     </div>
 </div>

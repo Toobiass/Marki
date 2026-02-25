@@ -34,6 +34,7 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     await this.settingsService.loadSettings();
+    this.viewMode.set(this.settingsService.defaultViewMode() as any);
     window.addEventListener('keydown', (event) => this.handleKeyboardEvent(event), { capture: true });
   }
 
