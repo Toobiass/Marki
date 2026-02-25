@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 15vh;
+    padding-top: 10vh;
     z-index: 1000;
     animation: fadeIn 0.15s ease-out;
 }
@@ -61,7 +61,7 @@
 }
 
 .list-content {
-    max-height: 60vh;
+    max-height: 75vh;
     overflow-y: auto;
 }
 

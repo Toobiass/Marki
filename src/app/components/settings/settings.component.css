@@ -128,9 +128,9 @@
 
 .theme-picker button.active,
 .preset-picker button.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
+    background: rgba(128, 128, 128, 0.15);
+    border-color: var(--text-muted);
+    color: var(--text-main);
 }
 
 .settings-footer {
