@@ -1,6 +1,6 @@
 {
   "name": "marki",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Minimalist, modern and clean Markdown Editor",
   "main": "electron/main.js",
   "scripts": {
@@ -9,11 +9,13 @@
     "dev": "ng serve",
     "electron": "electron .",
     "build": "ng build --configuration production",
-    "make-installer": "npm run build && electron-builder"
+    "make-installer": "npm run build && electron-builder",
+    "make-linux": "npm run build && electron-builder --linux"
   },
   "build": {
     "appId": "com.marki.editor",
     "productName": "Marki",
+    "icon": "assets/logo.png",
     "directories": {
       "output": "release"
     },
@@ -24,7 +26,16 @@
       "assets/**/*"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/logo.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "icon": "assets/logo.png"
     },
     "nsis": {
       "oneClick": false,

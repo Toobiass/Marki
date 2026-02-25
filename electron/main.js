@@ -227,7 +227,13 @@ ipcMain.handle('file:print-to-pdf', async (event, { html, filePath }) => {
     }
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    if (process.platform === 'win32') {
+        // packageInfo.build is often stripped by electron-builder in the packaged app
+        app.setAppUserModelId('com.marki.editor');
+    }
+    createWindow();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();

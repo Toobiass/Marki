@@ -45,6 +45,12 @@ npm run make-installer
 ```
 *The installer will be generated in the `/release` folder.*
 
+To generate a production-ready installer (`.deb`) for Linux:
+```bash
+npm run make-linux
+```
+*The installer will be generated in the `/release` folder.*
+
 ---
 
 ## ⌨️ Shortcut Table
