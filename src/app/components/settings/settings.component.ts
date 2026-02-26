@@ -1,4 +1,4 @@
-import { Component, signal, inject, HostListener } from '@angular/core';
+import { Component, signal, inject, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectronService } from '../../services/electron.service';
 import { SettingsService } from '../../services/settings.service';
 import { EditorService } from '../../services/editor.service';
@@ -16,11 +16,21 @@ export class SettingsComponent {
     public settingsService = inject(SettingsService);
 
     isVisible = signal(false);
+    @ViewChild('settingsModal') modal?: ElementRef;
+
+    close() {
+        this.isVisible.set(false);
+        this.editor.isOverlayOpen.set(false);
+    }
 
     toggle() {
-        const newState = !this.isVisible();
-        this.isVisible.set(newState);
-        this.editor.isOverlayOpen.set(newState);
+        if (this.isVisible()) {
+            this.close();
+        } else {
+            this.isVisible.set(true);
+            this.editor.isOverlayOpen.set(true);
+            setTimeout(() => this.modal?.nativeElement.focus(), 0);
+        }
     }
 
     async selectFolder() {
@@ -47,8 +57,7 @@ export class SettingsComponent {
         if (!this.isVisible()) return;
 
         if (event.key === 'Escape') {
-            this.isVisible.set(false);
-            this.editor.isOverlayOpen.set(false);
+            this.close();
         }
     }
 }

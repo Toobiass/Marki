@@ -27,3 +27,7 @@
     display: inline-block;
     margin-top: -1px;
 }
+
+.syncing {
+    color: var(--accent);
+}

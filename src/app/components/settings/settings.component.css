@@ -22,6 +22,7 @@
     overflow: hidden;
     color: var(--text-main);
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
 }
 
 .settings-header {
@@ -52,6 +53,17 @@
 
 .close-btn:hover {
     color: var(--text-main);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
 }
 
 .settings-content {
