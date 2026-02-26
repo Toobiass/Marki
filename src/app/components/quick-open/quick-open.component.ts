@@ -99,6 +99,7 @@ export class QuickOpenComponent {
     }
 
     async selectItem(item: any) {
+        await this.editor.handleAutoSave();
         const result = await this.electron.readFilePath(item.path);
         if (result) {
             this.editor.setFile(result.filePath, result.content);
