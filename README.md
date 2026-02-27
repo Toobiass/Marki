@@ -1,72 +1,80 @@
-# Marki
+# Marki 🖋️
 
-**Marki** is a modern, high-performance desktop application built with **Angular** and **Electron**, designed for users who value speed and aesthetic clarity.
+**Marki** is a minimalist, modern, and high-performance Markdown editor built with **Angular** and **Electron**. It is designed for thinkers and writers who value speed, aesthetic clarity, and a distraction-free environment.
 
-## The Vision
+---
 
-The core philosophy behind Marki is to eliminate the friction between thought and digital ink. Most editors are cluttered or visually unappealing; Marki provides a distraction-free environment to jot down information instantly.
+## Features
 
-While fully mouse-compatible, the app is **keyboard-first**. Every essential action is mapped to intuitive shortcuts, allowing power users to navigate, edit, and manage their notes without ever lifting their hands from the home row.
+- **Real-time Preview:** See your Markdown render instantly side-by-side.
+- **Smart Formatting:** Wrap words in bold or italic with a single shortcut, even when no text is selected.
+- **Smart Tabbed Navigation:** Tab out of code blocks, bold markers, and links with ease.
+- **Image Support:** Simply paste an image from your clipboard, and Marki handles the rest (saves it locally and inserts the Markdown link).
+- **Recent Files:** Quickly jump between your last edited documents with the "Quick Open" overlay.
+- **Auto-Save:** Your work is protected with debounced auto-save and an unsaved changes guard.
+- **PDF Export:** Turn your notes into clean, professional PDF documents.
+- **Customizable UI:** Support for Dark/Light mode and different layout presets (Split view, Editor-only, Preview-only).
 
-## Key Features
+---
 
-* **Split View:** Real-time side-by-side synchronization for instant feedback.
+## Shortcuts
 
-### Future Features
-* **Dual-Engine Interface:** Seamlessly switch between a dedicated **Markdown Editor** and a high-fidelity **Live Preview**.
-* **Flexible Layouts:** Choose the workflow that fits your focus:
-* **Editor Only:** For deep-work writing sessions.
-* **Preview Only:** For a clean reading experience.
+Efficiency is at the core of Marki. Use these shortcuts to stay in the flow:
 
+### File Management
+| Shortcut | Action |
+|----------|--------|
+| **Ctrl + N** | New Document |
+| **Ctrl + O** | Open File |
+| **Ctrl + Alt + O** | Quick Open (Recent Files) |
+| **Ctrl + S** | Save Document |
+| **Ctrl + Shift + S** | Export as PDF |
+| **Ctrl + P** | Set Default Working Directory |
+| **Ctrl + ,** | Open Settings |
+
+### Editing & Formatting
+| Shortcut | Action |
+|----------|--------|
+| **Ctrl + B** | Bold / Toggle Bold |
+| **Ctrl + I** | Italic / Toggle Italic |
+| **Ctrl + H** | Cycle Header Level (#, ##, ###) |
+| **Ctrl + K** | Insert Hyperlink |
+| **Ctrl + Shift + C** | Insert Code Block / Wrap in Code |
+| **Ctrl + Z** | Undo |
+| **Ctrl + Y** | Redo |
+| **Alt + ↑ / ↓** | Move Current Line Up / Down |
+| **Tab** | Smart-jump out of markers (`, **, ], ) |
+
+---
 
 ## Setup & Installation
 
 ### 1. Prerequisites
-Ensure that **Node.js** (latest LTS version) is installed on your system.
+Ensure you have **Node.js** (LTS version) installed.
 
-### 2. Install Dependencies
-Clone the repository and run the following command in the root directory:
+### 2. Installation
 ```bash
 npm install
 ```
-*This will automatically install Angular, Electron, CodeMirror, Marked, and all other necessary packages defined in `package.json`.*
 
-### 3. Start Application (Development Mode)
-To start the app in development mode with live build:
+### 3. Development
 ```bash
 npm start
 ```
-*Note: This command builds the Angular app in the background and automatically launches the Electron window once ready.*
 
-### 4. Create Installer (EXE)
-To generate a production-ready installer (`.exe`) for Windows:
+### 4. Build Installers
+To generate a production-ready installer for your system:
+
+#### Windows
 ```bash
 npm run make-installer
 ```
-*The installer will be generated in the `/release` folder.*
 
-To generate a production-ready installer (`.deb`) for Linux:
+#### Linux
 ```bash
 npm run make-linux
 ```
-*The installer will be generated in the `/release` folder.*
 
 ---
 
-## ⌨️ Shortcut Table
-
-| Shortcut        | Action                          |
-|-----------------|---------------------------------|
-| **Ctrl + S**    | Save document                   |
-| **Ctrl + O**    | Open document                   |
-| **Ctrl + N**    | Create new document             |
-| **Ctrl + P**    | Set default folder              |
-| **Ctrl + ,**    | Open Settings                   |
-
----
-
-## 🛠 Tech Stack
-*   **Frontend:** Angular
-*   **Runtime:** Electron
-*   **Editor Engine:** CodeMirror 6
-*   **Markdown Rendering:** Marked
+*Made with ❤️ by [Tobias](https://github.com/Toobiass)*
