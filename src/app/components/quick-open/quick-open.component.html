@@ -1,6 +1,6 @@
 @if (isVisible()) {
-<div class="overlay" (click)="close()">
-    <div #quickOpenModal class="modal" (click)="$event.stopPropagation()" (keydown)="onKey($event)" tabindex="0">
+<div class="overlay">
+    <div #quickOpenModal class="modal" (keydown)="onKey($event)" tabindex="0">
         <header class="header">
             <h2>Recent Files</h2>
             <button class="close-btn" (click)="close()">×</button>
