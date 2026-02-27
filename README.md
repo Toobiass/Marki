@@ -2,6 +2,8 @@
 
 **Marki** is a minimalist, modern, and high-performance Markdown editor built with **Angular** and **Electron**. It is designed for thinkers and writers who value speed, aesthetic clarity, and a distraction-free environment.
 
+![Marki Main Interface](screenshots/main.png)
+
 ---
 
 ## Features
@@ -12,8 +14,13 @@
 - **Image Support:** Simply paste an image from your clipboard, and Marki handles the rest (saves it locally and inserts the Markdown link).
 - **Recent Files:** Quickly jump between your last edited documents with the "Quick Open" overlay.
 - **Auto-Save:** Your work is protected with debounced auto-save and an unsaved changes guard.
+
+![Quick Open Interface](screenshots/quickview.png)
+
 - **PDF Export:** Turn your notes into clean, professional PDF documents.
 - **Customizable UI:** Support for Dark/Light mode and different layout presets (Split view, Editor-only, Preview-only).
+
+![Settings Interface](screenshots/settings.png)
 
 ---
 
