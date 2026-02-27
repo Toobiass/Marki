@@ -1,11 +1,19 @@
 <div class="main-container">
     <app-title-bar></app-title-bar>
-    <div class="panes-row">
+    <div class="panes-row" [class]="viewMode()">
         <app-editor class="pane editor-pane"></app-editor>
         <app-preview class="pane preview-pane"></app-preview>
     </div>
     <app-quick-open (requestFullOpen)="handleOpen()"></app-quick-open>
     <app-settings></app-settings>
+    <app-user-agreement></app-user-agreement>
+
+    @if (isExporting()) {
+    <div class="export-overlay">
+        <div class="loader"></div>
+        <span>Exporting PDF...</span>
+    </div>
+    }
 
     <button class="settings-gear" (click)="settings.toggle()" title="Settings (Ctrl+,)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"

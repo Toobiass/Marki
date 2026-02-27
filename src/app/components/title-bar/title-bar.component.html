@@ -2,7 +2,9 @@
 <div class="doc-title-bar">
     <span class="doc-title-text">
         {{ displayPath() }}
-        @if (editorService.isDirty()) {
+        @if (editorService.isSaving()) {
+        <span class="status-indicator syncing">Saving...</span>
+        } @else if (editorService.isDirty()) {
         <span class="unsaved-dot">•</span>
         }
     </span>

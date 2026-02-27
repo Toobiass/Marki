@@ -5,7 +5,6 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,6 +22,7 @@
     overflow: hidden;
     color: var(--text-main);
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
 }
 
 .settings-header {
@@ -53,6 +53,17 @@
 
 .close-btn:hover {
     color: var(--text-main);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
 }
 
 .settings-content {
@@ -108,12 +119,14 @@
     color: var(--text-muted);
 }
 
-.theme-picker {
+.theme-picker,
+.preset-picker {
     display: flex;
     gap: 12px;
 }
 
-.theme-picker button {
+.theme-picker button,
+.preset-picker button {
     flex: 1;
     background: var(--bg-dark);
     border: 1px solid var(--border);
@@ -122,12 +135,14 @@
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
+    font-size: 0.85rem;
 }
 
-.theme-picker button.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
+.theme-picker button.active,
+.preset-picker button.active {
+    background: rgba(128, 128, 128, 0.15);
+    border-color: var(--text-muted);
+    color: var(--text-main);
 }
 
 .settings-footer {

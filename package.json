@@ -1,6 +1,14 @@
 {
   "name": "marki",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "author": {
+    "name": "Tobias",
+    "email": "tobias23102005@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Toobiass/Marki.git"
+  },
   "description": "Minimalist, modern and clean Markdown Editor",
   "main": "electron/main.js",
   "scripts": {
@@ -9,11 +17,13 @@
     "dev": "ng serve",
     "electron": "electron .",
     "build": "ng build --configuration production",
-    "make-installer": "npm run build && electron-builder"
+    "make-installer": "npm run build && electron-builder",
+    "make-linux": "npm run build && electron-builder --linux"
   },
   "build": {
     "appId": "com.marki.editor",
     "productName": "Marki",
+    "icon": "assets/logo.png",
     "directories": {
       "output": "release"
     },
@@ -24,7 +34,16 @@
       "assets/**/*"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/logo.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "icon": "assets/logo.png"
     },
     "nsis": {
       "oneClick": false,
@@ -57,6 +76,7 @@
     "@angular-devkit/build-angular": "^19.0.6",
     "@angular/cli": "^19.0.6",
     "@angular/compiler-cli": "^19.0.0",
+    "chokidar": "^4.0.3",
     "concurrently": "^9.2.1",
     "electron": "^40.1.0",
     "electron-builder": "^26.7.0",

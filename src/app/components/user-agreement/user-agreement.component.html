@@ -1,0 +1,30 @@
+@if (visible()) {
+<div class="modal-overlay">
+    <div class="modal-content">
+        <h2>Usage Agreement & Privacy</h2>
+        <p>Before using Marki, please acknowledge the following information regarding privacy and file operations:</p>
+
+        <div class="info-section">
+            <h3>Local Data Processing</h3>
+            <p>Marki is an <strong>offline-first</strong> application. All data (text, Markdown files, and images) is
+                stored exclusively on your local device. No data is transmitted to external servers or cloud services.
+            </p>
+        </div>
+
+        <div class="info-section">
+            <h3>File Access</h3>
+            <p>By using Marki, you allow the application to:</p>
+            <ul>
+                <li>Create new Markdown files (.md).</li>
+                <li>Read, modify, and overwrite existing Markdown files.</li>
+                <li>Save images to your local file system when pasted.</li>
+            </ul>
+        </div>
+
+        <p class="final-note">By clicking "Accept", you confirm that you understand the local-first nature of this
+            application.</p>
+
+        <button class="accept-button" (click)="onAccept()">Accept & Start</button>
+    </div>
+</div>
+}

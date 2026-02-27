@@ -1,6 +1,6 @@
 # Marki
 
-**Marki** is a modern, high-performance desktop application built with **Angular (v19)** and **Electron**, designed for users who value speed and aesthetic clarity.
+**Marki** is a modern, high-performance desktop application built with **Angular** and **Electron**, designed for users who value speed and aesthetic clarity.
 
 ## The Vision
 
@@ -10,15 +10,16 @@ While fully mouse-compatible, the app is **keyboard-first**. Every essential act
 
 ## Key Features
 
+* **Split View:** Real-time side-by-side synchronization for instant feedback.
+
+### Future Features
 * **Dual-Engine Interface:** Seamlessly switch between a dedicated **Markdown Editor** and a high-fidelity **Live Preview**.
 * **Flexible Layouts:** Choose the workflow that fits your focus:
 * **Editor Only:** For deep-work writing sessions.
 * **Preview Only:** For a clean reading experience.
-* **Split View:** Real-time side-by-side synchronization for instant feedback.
 
-## Setup & Installation (For Developers)
 
-To run this project on a new device, follow these steps:
+## Setup & Installation
 
 ### 1. Prerequisites
 Ensure that **Node.js** (latest LTS version) is installed on your system.
@@ -44,6 +45,12 @@ npm run make-installer
 ```
 *The installer will be generated in the `/release` folder.*
 
+To generate a production-ready installer (`.deb`) for Linux:
+```bash
+npm run make-linux
+```
+*The installer will be generated in the `/release` folder.*
+
 ---
 
 ## ⌨️ Shortcut Table
@@ -54,12 +61,12 @@ npm run make-installer
 | **Ctrl + O**    | Open document                   |
 | **Ctrl + N**    | Create new document             |
 | **Ctrl + P**    | Set default folder              |
+| **Ctrl + ,**    | Open Settings                   |
 
 ---
 
 ## 🛠 Tech Stack
-*   **Frontend:** Angular 19 (Signals, Standalone Components)
+*   **Frontend:** Angular
 *   **Runtime:** Electron
 *   **Editor Engine:** CodeMirror 6
 *   **Markdown Rendering:** Marked
-*   **Build Tool:** Angular CLI & Electron-Builder

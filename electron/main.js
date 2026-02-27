@@ -9,11 +9,29 @@ try {
     require('electron-reloader')(module);
 } catch { }
 
+function getWindowDimensions(preset) {
+    const sizePreset = preset || store.get('window_size_preset') || 'medium';
+    let width = 1200;
+    let height = 800;
+
+    if (sizePreset === 'small') {
+        width = 900;
+        height = 650;
+    } else if (sizePreset === 'large') {
+        width = 1600;
+        height = 1000;
+    }
+    return { width, height };
+}
+
 function createWindow() {
+    const { width, height } = getWindowDimensions();
+
     const win = new BrowserWindow({
-        width: 1000,
-        height: 700,
+        width: width,
+        height: height,
         title: `Marki v${packageInfo.version}`,
+        icon: path.join(__dirname, '../assets/logo.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             sandbox: false,
@@ -74,6 +92,7 @@ ipcMain.handle('file:open', async () => {
 });
 
 ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName }) => {
+    const isFirstSave = !existingPath;
     let savePath = existingPath;
 
     if (!savePath) {
@@ -92,6 +111,31 @@ ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName
     try {
         fs.writeFileSync(savePath, content, 'utf8');
         addRecentFile(savePath);
+
+        if (isFirstSave) {
+            const targetDir = path.dirname(savePath);
+            const standardDir = store.get('standard-folder') || app.getPath('documents');
+
+            if (targetDir !== standardDir) {
+                const imageRegex = /!\[alt text\]\((image_\d{4}-\d{2}-\d{2}T[^)]+\.png)\)/g;
+                let match;
+                while ((match = imageRegex.exec(content)) !== null) {
+                    const imageName = match[1];
+                    const sourcePath = path.join(standardDir, imageName);
+                    const destPath = path.join(targetDir, imageName);
+
+                    if (fs.existsSync(sourcePath) && !fs.existsSync(destPath)) {
+                        try {
+                            fs.copyFileSync(sourcePath, destPath);
+                            console.log(`Migrated image: ${imageName} to ${targetDir}`);
+                        } catch (copyErr) {
+                            console.error(`Failed to migrate image ${imageName}:`, copyErr);
+                        }
+                    }
+                }
+            }
+        }
+
         return { success: true, filePath: savePath };
     } catch (err) {
         console.error("Save failed:", err);
@@ -110,10 +154,40 @@ ipcMain.handle('file:read-path', async (event, filePath) => {
     } catch (err) { return null; }
 });
 
+ipcMain.handle('file:save-image', async (event, { arrayBuffer, currentFilePath }) => {
+    let targetDir;
+
+    if (currentFilePath) {
+        targetDir = path.dirname(currentFilePath);
+    } else {
+        targetDir = store.get('standard-folder') || app.getPath('documents');
+    }
+
+    if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const randomStr = Math.random().toString(36).substring(2, 7);
+    const fileName = `image_${timestamp}_${randomStr}.png`;
+    const fullPath = path.join(targetDir, fileName);
+
+    try {
+        fs.writeFileSync(fullPath, Buffer.from(arrayBuffer));
+        return { success: true, fileName, fullPath };
+    } catch (err) {
+        console.error("Image save failed:", err);
+        return { success: false, error: err.message };
+    }
+});
+
 ipcMain.handle('settings:get', (event) => {
     return {
         standardFolder: store.get('standard-folder') || '',
         theme: store.get('theme') || 'dark',
+        userAgreementAccepted: store.get('user-agreement-accepted') || false,
+        defaultViewMode: store.get('default_view_mode') || 'split',
+        windowSizePreset: store.get('window_size_preset') || 'medium',
     };
 });
 
@@ -126,7 +200,68 @@ ipcMain.on('theme:set-native', (event, theme) => {
     nativeTheme.themeSource = theme;
 });
 
-app.whenReady().then(createWindow);
+ipcMain.on('window:close', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) win.close();
+});
+
+ipcMain.on('window:apply-size-preset', (event, preset) => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) {
+        const { width, height } = getWindowDimensions(preset);
+        win.setSize(width, height);
+        win.center();
+    }
+});
+
+ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {
+    const defaultDir = store.get('standard-folder') || app.getPath('documents');
+    const { canceled, filePath } = await dialog.showSaveDialog({
+        title: 'Export to PDF',
+        defaultPath: path.join(defaultDir, `${suggestedName}.pdf`),
+        filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    });
+
+    return canceled ? null : filePath;
+});
+
+ipcMain.handle('file:print-to-pdf', async (event, { html, filePath }) => {
+    const printWin = new BrowserWindow({
+        show: false,
+        webPreferences: {
+            offscreen: true,
+            webSecurity: false
+        }
+    });
+
+    try {
+        await printWin.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const data = await printWin.webContents.printToPDF({
+            margins: { top: 0, bottom: 0, left: 0, right: 0 },
+            printBackground: true,
+            pageSize: 'A4'
+        });
+
+        fs.writeFileSync(filePath, data);
+        return { success: true, filePath };
+    } catch (err) {
+        console.error('PDF generation failed:', err);
+        return { success: false, error: err.message };
+    } finally {
+        printWin.close();
+    }
+});
+
+app.whenReady().then(() => {
+    if (process.platform === 'win32') {
+        // packageInfo.build is often stripped by electron-builder in the packaged app
+        app.setAppUserModelId('com.marki.editor');
+    }
+    createWindow();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();

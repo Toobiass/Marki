@@ -1,14 +1,15 @@
 @if (isVisible()) {
-<div class="overlay" (click)="isVisible.set(false)">
-    <div class="modal" (click)="$event.stopPropagation()">
+<div class="overlay">
+    <div #quickOpenModal class="modal" (keydown)="onKey($event)" tabindex="0">
         <header class="header">
             <h2>Recent Files</h2>
-            <button class="close-btn" (click)="isVisible.set(false)">×</button>
+            <button class="close-btn" (click)="close()">×</button>
         </header>
 
         <div class="list-content">
             @for (item of items(); track item.path; let i = $index) {
-            <div class="item" [class.selected]="i === selectedIndex()" (click)="selectItem(item)">
+            <div class="item" [class.selected]="i === selectedIndex()" (click)="selectItem(item)"
+                (mouseenter)="onItemHover(i)">
                 <span class="file-name">{{ item.name }}</span>
                 <span class="file-path">{{ item.path }}</span>
             </div>
