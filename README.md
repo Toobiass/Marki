@@ -1,6 +1,6 @@
 # Marki 🖋️
 
-**Marki** is a minimalist, modern, and high-performance Markdown editor built with **Angular** and **Electron**. It is designed for thinkers and writers who value speed, aesthetic clarity, and a distraction-free environment.
+**Marki** is a minimalist, modern, and high-performance Markdown editor built with **Angular** and **Electron**. It is designed for writers who value speed, aesthetic, and a distraction-free environment.
 
 ![Marki Main Interface](screenshots/main.png)
 
@@ -35,7 +35,7 @@ Efficiency is at the core of Marki. Use these shortcuts to stay in the flow:
 | **Ctrl + O** | Open File |
 | **Ctrl + Alt + O** | Quick Open (Recent Files) |
 | **Ctrl + S** | Save Document |
-| **Ctrl + Shift + S** | Export as PDF |
+| **Ctrl + E** | Export as PDF |
 | **Ctrl + P** | Set Default Working Directory |
 | **Ctrl + ,** | Open Settings |
 
