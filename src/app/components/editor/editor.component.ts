@@ -97,6 +97,7 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
           { key: "Ctrl-y", run: (view) => { redo(view); return true; } },
           { key: "Alt-ArrowUp", run: moveLineUp },
           { key: "Alt-ArrowDown", run: moveLineDown },
+          { key: "Ctrl-x", run: (view) => this.cutLine(view) },
           { key: "Tab", run: () => this.handleTab() },
         ]),
         EditorView.updateListener.of((update) => {
@@ -215,6 +216,40 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
     }
 
     return false;
+  }
+
+  private cutLine(view: EditorView): boolean {
+    const { state, dispatch } = view;
+    // If there is a selection, we let the default cut behavior take over
+    if (!state.selection.main.empty) return false;
+
+    const line = state.doc.lineAt(state.selection.main.head);
+    let from = line.from;
+    let to = line.to;
+
+    // Define the range to capture (including the newline character)
+    let textToCopy = line.text;
+    if (line.number < state.doc.lines) {
+      // Include the newline after the line if not its the last line
+      to = state.doc.line(line.number + 1).from;
+      textToCopy += '\n';
+    } else if (line.number > 1) {
+      // If it's the last line and not the only one, include the newline before it
+      from = state.doc.line(line.number - 1).to;
+      textToCopy = '\n' + textToCopy;
+    }
+
+    // Use navigator.clipboard to copy the text.
+    // This requires a user-initiated event, which Ctrl+X is.
+    navigator.clipboard.writeText(textToCopy);
+
+    // Delete the identified range
+    dispatch({
+      changes: { from, to, insert: "" },
+      userEvent: "delete.cut"
+    });
+
+    return true;
   }
 
   private toggleCodeBlock() {
