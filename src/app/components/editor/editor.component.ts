@@ -111,6 +111,9 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
           },
           paste: (event, view) => {
             this.handlePaste(event, view);
+          },
+          drop: (event, view) => {
+            this.handleDrop(event, view);
           }
         })
       ]
@@ -168,28 +171,51 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
         handled = true;
         const file = item.getAsFile();
         if (!file) continue;
-
-        this.electronService.log(`Image paste detected: ${item.type}`);
-
-        file.arrayBuffer().then(async (arrayBuffer) => {
-          const currentFilePath = this.editorService.filePath();
-          const result = await this.electronService.saveImage(arrayBuffer, currentFilePath);
-
-          if (result && result.success && result.fileName) {
-            const markdownImage = `![alt text](${result.fileName})`;
-            const pos = view.state.selection.main.head;
-            view.dispatch({
-              changes: { from: pos, to: pos, insert: markdownImage },
-              selection: { anchor: pos + markdownImage.length }
-            });
-            this.electronService.log(`Image saved and inserted: ${result.fileName}`);
-          } else {
-            this.electronService.log(`Failed to save image: ${result?.error}`);
-          }
-        });
+        this.processImage(file, view, item.type);
       }
     }
     return handled;
+  }
+
+  private handleDrop(event: DragEvent, view: EditorView): boolean {
+    const files = event.dataTransfer?.files;
+    if (!files || files.length === 0) return false;
+
+    let handled = false;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        event.preventDefault();
+        handled = true;
+        this.processImage(file, view, file.type);
+      }
+    }
+    return handled;
+  }
+
+  private async processImage(file: File, view: EditorView, type: string) {
+    this.electronService.log(`Image processing detected: ${type}`);
+    const extension = type.split('/')[1] || 'png';
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const currentFilePath = this.editorService.filePath();
+      const result = await this.electronService.saveImage(arrayBuffer, currentFilePath, extension);
+
+      if (result && result.success && result.fileName) {
+        const markdownImage = `![alt text](${result.fileName})`;
+        const pos = view.state.selection.main.head;
+        view.dispatch({
+          changes: { from: pos, to: pos, insert: markdownImage },
+          selection: { anchor: pos + markdownImage.length }
+        });
+        this.electronService.log(`Image saved and inserted: ${result.fileName}`);
+      } else {
+        this.electronService.log(`Failed to save image: ${result?.error}`);
+      }
+    } catch (err) {
+      this.electronService.log(`Error processing image: ${err}`);
+    }
   }
 
   private handleTab(): boolean {

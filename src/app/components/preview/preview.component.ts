@@ -51,10 +51,11 @@ export class PreviewComponent {
 
       renderer.image = (token: any) => {
         let href = token.href;
-        // If it's a relative path and we have a baseDir, make it absolute for the preview
-        if (href && !href.startsWith('http') && !href.startsWith('file://') && !href.startsWith('/') && !href.includes(':')) {
+        if (href && !href.startsWith('http') && !href.startsWith('file://')) {
           const isAbsolutePath = href.includes(':') || href.startsWith('/');
-          if (!isAbsolutePath && baseDir) {
+          if (isAbsolutePath) {
+            token.href = 'file:///' + href.replace(/\\/g, '/').replace(/^\/+/, '/');
+          } else if (baseDir) {
             const absolutePath = baseDir + href;
             token.href = 'file:///' + absolutePath.replace(/\\/g, '/').replace(/^\/+/, '/');
           }
