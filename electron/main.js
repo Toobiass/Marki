@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } = require('electron');
 const path = require('path');
 const packageInfo = require('../package.json');
 const Store = require('electron-store');
@@ -212,6 +212,10 @@ ipcMain.on('window:apply-size-preset', (event, preset) => {
         win.setSize(width, height);
         win.center();
     }
+});
+
+ipcMain.on('open-external', (event, url) => {
+    shell.openExternal(url);
 });
 
 ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {
