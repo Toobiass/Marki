@@ -70,6 +70,20 @@ export class PreviewComponent {
     }
   }
 
+  handleLinkClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const anchor = target.closest('a');
+
+    if (anchor && anchor.href) {
+      const href = anchor.getAttribute('href');
+      // Only intercept external links (http, https)
+      if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+        event.preventDefault();
+        this.electronService.openExternal(href);
+      }
+    }
+  }
+
   onScroll() {
     if (this.isSyncing) {
       this.isSyncing = false;

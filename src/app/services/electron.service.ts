@@ -26,6 +26,7 @@ export interface ElectronAPI {
   printToPdf: (data: { html: string; filePath: string }) => Promise<FileSaveResult>;
   close: () => void;
   applySizePreset: (preset: string) => void;
+  openExternal: (url: string) => void;
 }
 
 declare global {
@@ -102,5 +103,9 @@ export class ElectronService {
 
   applySizePreset(preset: string) {
     window.electronAPI?.applySizePreset(preset);
+  }
+
+  openExternal(url: string) {
+    window.electronAPI?.openExternal(url);
   }
 }
