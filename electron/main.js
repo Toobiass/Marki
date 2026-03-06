@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } = require('electron');
 const path = require('path');
 const packageInfo = require('../package.json');
 const Store = require('electron-store');
@@ -117,7 +117,7 @@ ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName
             const standardDir = store.get('standard-folder') || app.getPath('documents');
 
             if (targetDir !== standardDir) {
-                const imageRegex = /!\[alt text\]\((image_\d{4}-\d{2}-\d{2}T[^)]+\.png)\)/g;
+                const imageRegex = /!\[alt text\]\((image_\d{4}-\d{2}-\d{2}T[^)]+\.(png|gif|webp|jpg|jpeg))\)/g;
                 let match;
                 while ((match = imageRegex.exec(content)) !== null) {
                     const imageName = match[1];
@@ -154,7 +154,7 @@ ipcMain.handle('file:read-path', async (event, filePath) => {
     } catch (err) { return null; }
 });
 
-ipcMain.handle('file:save-image', async (event, { arrayBuffer, currentFilePath }) => {
+ipcMain.handle('file:save-image', async (event, { arrayBuffer, currentFilePath, extension = 'png' }) => {
     let targetDir;
 
     if (currentFilePath) {
@@ -169,7 +169,7 @@ ipcMain.handle('file:save-image', async (event, { arrayBuffer, currentFilePath }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
     const randomStr = Math.random().toString(36).substring(2, 7);
-    const fileName = `image_${timestamp}_${randomStr}.png`;
+    const fileName = `image_${timestamp}_${randomStr}.${extension.replace(/^\./, '')}`;
     const fullPath = path.join(targetDir, fileName);
 
     try {
@@ -212,6 +212,10 @@ ipcMain.on('window:apply-size-preset', (event, preset) => {
         win.setSize(width, height);
         win.center();
     }
+});
+
+ipcMain.on('open-external', (event, url) => {
+    shell.openExternal(url);
 });
 
 ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {

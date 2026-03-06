@@ -51,10 +51,11 @@ export class PreviewComponent {
 
       renderer.image = (token: any) => {
         let href = token.href;
-        // If it's a relative path and we have a baseDir, make it absolute for the preview
-        if (href && !href.startsWith('http') && !href.startsWith('file://') && !href.startsWith('/') && !href.includes(':')) {
+        if (href && !href.startsWith('http') && !href.startsWith('file://')) {
           const isAbsolutePath = href.includes(':') || href.startsWith('/');
-          if (!isAbsolutePath && baseDir) {
+          if (isAbsolutePath) {
+            token.href = 'file:///' + href.replace(/\\/g, '/').replace(/^\/+/, '/');
+          } else if (baseDir) {
             const absolutePath = baseDir + href;
             token.href = 'file:///' + absolutePath.replace(/\\/g, '/').replace(/^\/+/, '/');
           }
@@ -66,6 +67,20 @@ export class PreviewComponent {
     } catch (err) {
       console.error('[Preview] Render error:', err);
       return await marked.parse(content || '');
+    }
+  }
+
+  handleLinkClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const anchor = target.closest('a');
+
+    if (anchor && anchor.href) {
+      const href = anchor.getAttribute('href');
+      // Only intercept external links (http, https)
+      if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+        event.preventDefault();
+        this.electronService.openExternal(href);
+      }
     }
   }
 
@@ -138,16 +153,37 @@ export class PreviewComponent {
         }
         h1 { color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         h2 { color: var(--text-main); margin-top: 1.5em; }
-        h3 { color: var(--text-main); }
-        p { margin-bottom: 16px; font-size: 11pt; }
+        h3 { color: var(--text-main); margin-top: 1.2em; }
+        p { margin-bottom: 16px; font-size: 11pt; line-height: 1.6; }
+        ul, ol { padding-left: 20px; margin-bottom: 16px; }
+        li { margin-bottom: 6px; font-size: 11pt; }
+        hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
         code { background: #f3f3f3; color: #d63384; padding: 2px 4px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
         pre { background: #f8f9fa; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
         blockquote { border-left: 4px solid var(--accent); margin: 0; padding-left: 20px; color: var(--text-muted); font-style: italic; }
         a { color: var(--accent); text-decoration: underline; }
         img { max-width: 100%; height: auto; display: block; border-radius: 8px; margin: 20px 0; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
-        th { background: #f8f9fa; }
+        table { 
+          border-collapse: collapse; 
+          width: 100%; 
+          margin: 24px 0; 
+          font-size: 10pt;
+          border: 1px solid #e5e5e5;
+        }
+        th { 
+          background: #f8f9fa; 
+          font-weight: 600;
+          padding: 10px 12px;
+          border-bottom: 2px solid #e5e5e5;
+          text-align: left;
+        }
+        td { 
+          padding: 10px 12px;
+          border-bottom: 1px solid #e5e5e5;
+        }
+        tr:nth-child(even) {
+          background: #fafafa;
+        }
       `;
 
       const fullHtml = `

@@ -15,4 +15,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     printToPdf: (data) => ipcRenderer.invoke('file:print-to-pdf', data),
     close: () => ipcRenderer.send('window:close'),
     applySizePreset: (preset) => ipcRenderer.send('window:apply-size-preset', preset),
+    openExternal: (url) => ipcRenderer.send('open-external', url),
 });

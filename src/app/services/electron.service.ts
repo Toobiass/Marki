@@ -16,7 +16,7 @@ export interface ElectronAPI {
   selectFolder: () => Promise<string | null>;
   openFile: () => Promise<FileOpenResult | null>;
   saveFile: (data: { content: string; existingPath: string | null; suggestedName: string }) => Promise<FileSaveResult>;
-  saveImage: (data: { arrayBuffer: ArrayBuffer; currentFilePath: string | null }) => Promise<{ success: boolean; fileName?: string; fullPath?: string; error?: string }>;
+  saveImage: (data: { arrayBuffer: ArrayBuffer; currentFilePath: string | null; extension?: string }) => Promise<{ success: boolean; fileName?: string; fullPath?: string; error?: string }>;
   getRecentFiles: () => Promise<string[]>;
   readFilePath: (path: string) => Promise<FileOpenResult | null>;
   getSettings: () => Promise<any>;
@@ -26,6 +26,7 @@ export interface ElectronAPI {
   printToPdf: (data: { html: string; filePath: string }) => Promise<FileSaveResult>;
   close: () => void;
   applySizePreset: (preset: string) => void;
+  openExternal: (url: string) => void;
 }
 
 declare global {
@@ -60,8 +61,8 @@ export class ElectronService {
     return window.electronAPI?.saveFile({ content, existingPath, suggestedName }) || { success: false, error: 'Electron API not available' };
   }
 
-  async saveImage(arrayBuffer: ArrayBuffer, currentFilePath: string | null) {
-    return window.electronAPI?.saveImage({ arrayBuffer, currentFilePath });
+  async saveImage(arrayBuffer: ArrayBuffer, currentFilePath: string | null, extension?: string) {
+    return window.electronAPI?.saveImage({ arrayBuffer, currentFilePath, extension });
   }
 
   async getRecentFiles() {
@@ -102,5 +103,9 @@ export class ElectronService {
 
   applySizePreset(preset: string) {
     window.electronAPI?.applySizePreset(preset);
+  }
+
+  openExternal(url: string) {
+    window.electronAPI?.openExternal(url);
   }
 }
