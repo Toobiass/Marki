@@ -82,6 +82,4 @@ npm run make-installer
 npm run make-linux
 ```
 
----
-
 *Made by [Tobias](https://github.com/Toobiass)*
