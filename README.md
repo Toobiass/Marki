@@ -84,4 +84,4 @@ npm run make-linux
 
 ---
 
-*Made with ❤️ by [Tobias](https://github.com/Toobiass)*
+*Made by [Tobias](https://github.com/Toobiass)*
