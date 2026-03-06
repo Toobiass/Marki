@@ -33,7 +33,7 @@ Efficiency is at the core of Marki. Use these shortcuts to stay in the flow:
 |----------|--------|
 | **Ctrl + N** | New Document |
 | **Ctrl + O** | Open File |
-| **Ctrl + Alt + O** | Quick Open (Recent Files) |
+| **Ctrl + O** | Quick Open (Recent Files) |
 | **Ctrl + S** | Save Document |
 | **Ctrl + E** | Export as PDF |
 | **Ctrl + P** | Set Default Working Directory |
