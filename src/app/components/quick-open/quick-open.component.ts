@@ -19,6 +19,7 @@ export class QuickOpenComponent {
     @ViewChild('quickOpenModal') modal?: ElementRef;
 
     isVisible = signal(false);
+    isLoading = signal(false);
     items = signal<any[]>([]);
     selectedIndex = signal(0);
     private canHover = false;
@@ -40,23 +41,26 @@ export class QuickOpenComponent {
     }
 
     async openOverlay() {
+        this.canHover = false;
+        this.items.set([]);
+        this.selectedIndex.set(0);
+        this.isLoading.set(true);
+        this.isVisible.set(true);
+        this.editor.isOverlayOpen.set(true);
+
+        setTimeout(() => this.modal?.nativeElement.focus(), 0);
+
         const recents = await this.electron.getRecentFiles();
-        const mapped = recents.map(path => ({
+        const existing = await this.electron.filterExistingFiles(recents);
+        const mapped = existing.map(path => ({
             name: path.split(/[\\/]/).pop(),
             path: path
         }));
 
-        this.canHover = false;
         this.items.set(mapped);
-        this.selectedIndex.set(0);
-        this.isVisible.set(true);
-        this.editor.isOverlayOpen.set(true);
+        this.isLoading.set(false);
 
-        setTimeout(() => {
-            this.modal?.nativeElement.focus();
-            // Enable hover after a short delay to prevent initial mouse position from jumping selection
-            setTimeout(() => this.canHover = true, 150);
-        }, 0);
+        setTimeout(() => this.canHover = true, 150);
     }
 
     @HostListener('window:keydown', ['$event'])
