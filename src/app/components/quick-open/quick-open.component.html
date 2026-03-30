@@ -3,6 +3,9 @@
     <div #quickOpenModal class="modal" (keydown)="onKey($event)" tabindex="0">
         <header class="header">
             <h2>Recent Files</h2>
+            @if (isLoading()) {
+            <div class="spinner"></div>
+            }
             <button class="close-btn" (click)="close()">×</button>
         </header>
 

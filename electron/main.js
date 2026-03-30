@@ -46,7 +46,7 @@ function createWindow() {
 function addRecentFile(filePath) {
     let recents = store.get('recent-files') || [];
     recents = [filePath, ...recents.filter(r => r !== filePath)];
-    store.set('recent-files', recents.slice(0, 6));
+    store.set('recent-files', recents.slice(0, 20));
 }
 
 ipcMain.on('log-to-terminal', (event, message) => {
@@ -144,6 +144,8 @@ ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName
 });
 
 ipcMain.handle('file:get-recents', () => store.get('recent-files') || []);
+
+ipcMain.handle('file:filter-existing', (event, paths) => paths.filter(p => fs.existsSync(p)));
 
 
 ipcMain.handle('file:read-path', async (event, filePath) => {

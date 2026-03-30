@@ -18,6 +18,7 @@ export interface ElectronAPI {
   saveFile: (data: { content: string; existingPath: string | null; suggestedName: string }) => Promise<FileSaveResult>;
   saveImage: (data: { arrayBuffer: ArrayBuffer; currentFilePath: string | null; extension?: string }) => Promise<{ success: boolean; fileName?: string; fullPath?: string; error?: string }>;
   getRecentFiles: () => Promise<string[]>;
+  filterExistingFiles: (paths: string[]) => Promise<string[]>;
   readFilePath: (path: string) => Promise<FileOpenResult | null>;
   getSettings: () => Promise<any>;
   setSetting: (key: string, value: any) => Promise<boolean>;
@@ -68,6 +69,11 @@ export class ElectronService {
   async getRecentFiles() {
     return window.electronAPI.getRecentFiles();
   }
+
+  async filterExistingFiles(paths: string[]): Promise<string[]> {
+    return window.electronAPI.filterExistingFiles(paths);
+  }
+
   async readFilePath(path: string) {
     return window.electronAPI.readFilePath(path);
   }
