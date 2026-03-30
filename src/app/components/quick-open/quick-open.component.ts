@@ -34,6 +34,7 @@ export class QuickOpenComponent {
             this.openOverlay();
         } else {
             this.isVisible.set(false);
+            this.editor.isOverlayOpen.set(false);
             this.requestFullOpen.emit();
         }
     }
