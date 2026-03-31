@@ -1,6 +1,8 @@
-@if (visible()) {
+@if (visible() || showAutostartPrompt()) {
 <div class="modal-overlay">
     <div class="modal-content">
+
+        @if (!showAutostartPrompt()) {
         <h2>Usage Agreement & Privacy</h2>
         <p>Before using Marki, please acknowledge the following information regarding privacy and file operations:</p>
 
@@ -25,6 +27,19 @@
             application.</p>
 
         <button class="accept-button" (click)="onAccept()">Accept & Start</button>
+        }
+
+        @if (showAutostartPrompt()) {
+        <h2>Start with Windows?</h2>
+        <p>Would you like Marki to start automatically with Windows and run silently in the background?</p>
+        <p>You can then open a new window at any time with <strong>Alt+Shift+M</strong> — from anywhere on your system.</p>
+        <p class="final-note">This can be changed at any time in Settings.</p>
+        <div class="autostart-buttons">
+            <button class="accept-button" (click)="onAutostartChoice(true)">Enable Autostart</button>
+            <button class="skip-button" (click)="onAutostartChoice(false)">No Thanks</button>
+        </div>
+        }
+
     </div>
 </div>
 }

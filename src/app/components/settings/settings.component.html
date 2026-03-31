@@ -51,6 +51,14 @@
                 </div>
                 <p class="description">Choose the default window dimensions on startup.</p>
             </div>
+            <div class="settings-group">
+                <label>Autostart</label>
+                <div class="preset-picker">
+                    <button [class.active]="!settingsService.autostart()" (click)="toggleAutostart()">Off</button>
+                    <button [class.active]="settingsService.autostart()" (click)="toggleAutostart()">On</button>
+                </div>
+                <p class="description">Launch Marki silently on Windows startup. Open a window anytime with Alt+Shift+M.</p>
+            </div>
         </section>
     </div>
 </div>
