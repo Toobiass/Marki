@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     saveImage: (data) => ipcRenderer.invoke('file:save-image', data),
     getRecentFiles: () => ipcRenderer.invoke('file:get-recents'),
     filterExistingFiles: (paths) => ipcRenderer.invoke('file:filter-existing', paths),
+    getRecentFilesExisting: () => ipcRenderer.invoke('file:get-recents-existing'),
     readFilePath: (path) => ipcRenderer.invoke('file:read-path', path),
     getSettings: () => ipcRenderer.invoke('settings:get'),
     setSetting: (key, value) => ipcRenderer.invoke('settings:set', { key, value }),
@@ -17,4 +18,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     close: () => ipcRenderer.send('window:close'),
     applySizePreset: (preset) => ipcRenderer.send('window:apply-size-preset', preset),
     openExternal: (url) => ipcRenderer.send('open-external', url),
+    getAutostart: () => ipcRenderer.invoke('autostart:get'),
+    setAutostart: (enabled) => ipcRenderer.invoke('autostart:set', enabled),
 });

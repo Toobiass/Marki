@@ -52,6 +52,10 @@ export class SettingsComponent {
         await this.settingsService.setWindowSizePreset(preset);
     }
 
+    async toggleAutostart() {
+        await this.settingsService.setAutostart(!this.settingsService.autostart());
+    }
+
     @HostListener('window:keydown', ['$event'])
     onKey(event: KeyboardEvent) {
         if (!this.isVisible()) return;

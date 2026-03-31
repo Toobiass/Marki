@@ -69,6 +69,35 @@ li {
     font-style: italic;
 }
 
+.autostart-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.autostart-buttons .accept-button,
+.autostart-buttons .skip-button {
+    margin-top: 0;
+    flex: 1;
+}
+
+.skip-button {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skip-button:hover {
+    color: var(--text-main);
+    border-color: var(--text-muted);
+}
+
 .accept-button {
     margin-top: 1rem;
     background: #333;

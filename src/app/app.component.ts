@@ -61,6 +61,10 @@ export class AppComponent implements OnInit {
     this.viewMode.set(this.settingsService.defaultViewMode() as any);
     window.addEventListener('keydown', (event) => this.handleKeyboardEvent(event), { capture: true });
 
+    if (this.viewMode() !== 'preview') {
+      setTimeout(() => this.editor.focus(), 100);
+    }
+
     // Immediate save on exit
     window.onbeforeunload = () => {
       if (this.editorService.isDirty() && this.editorService.filePath()) {

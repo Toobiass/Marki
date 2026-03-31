@@ -50,8 +50,7 @@ export class QuickOpenComponent {
 
         setTimeout(() => this.modal?.nativeElement.focus(), 0);
 
-        const recents = await this.electron.getRecentFiles();
-        const existing = await this.electron.filterExistingFiles(recents);
+        const existing = await this.electron.getRecentFilesExisting();
         const mapped = existing.map(path => ({
             name: path.split(/[\\/]/).pop(),
             path: path
@@ -115,7 +114,7 @@ export class QuickOpenComponent {
     // Proactive: Scroll selected item into view
     constructor() {
         effect(() => {
-            const index = this.selectedIndex();
+            this.selectedIndex();
             if (this.isVisible()) {
                 setTimeout(() => {
                     const selectedElem = document.querySelector('.item.selected');

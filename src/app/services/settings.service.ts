@@ -12,6 +12,7 @@ export class SettingsService {
     userAgreementAccepted = signal(false);
     defaultViewMode = signal('split');
     windowSizePreset = signal('medium');
+    autostart = signal(false);
 
     async loadSettings() {
         const settings = await this.electron.getSettings();
@@ -20,7 +21,13 @@ export class SettingsService {
         this.userAgreementAccepted.set(settings.userAgreementAccepted || false);
         this.defaultViewMode.set(settings.defaultViewMode || 'split');
         this.windowSizePreset.set(settings.windowSizePreset || 'medium');
+        this.autostart.set(await this.electron.getAutostart());
         this.applyTheme(this.theme());
+    }
+
+    async setAutostart(enabled: boolean) {
+        await this.electron.setAutostart(enabled);
+        this.autostart.set(enabled);
     }
 
     async setStandardFolder(path: string) {
