@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell, globalShortcut, Tray, nativeImage } = require('electron');
 const path = require('path');
 const packageInfo = require('../package.json');
 const Store = require('electron-store');
@@ -41,12 +41,13 @@ function createWindow() {
 
     Menu.setApplicationMenu(null);
     win.loadFile(path.join(__dirname, '../dist/marki/browser/index.html'));
+    return win;
 }
 
 function addRecentFile(filePath) {
     let recents = store.get('recent-files') || [];
     recents = [filePath, ...recents.filter(r => r !== filePath)];
-    store.set('recent-files', recents.slice(0, 6));
+    store.set('recent-files', recents.slice(0, 20));
 }
 
 ipcMain.on('log-to-terminal', (event, message) => {
@@ -145,6 +146,13 @@ ipcMain.handle('file:save', async (event, { content, existingPath, suggestedName
 
 ipcMain.handle('file:get-recents', () => store.get('recent-files') || []);
 
+ipcMain.handle('file:filter-existing', (event, paths) => paths.filter(p => fs.existsSync(p)));
+
+ipcMain.handle('file:get-recents-existing', () => {
+    const recents = store.get('recent-files') || [];
+    return recents.filter(p => fs.existsSync(p));
+});
+
 
 ipcMain.handle('file:read-path', async (event, filePath) => {
     try {
@@ -218,6 +226,16 @@ ipcMain.on('open-external', (event, url) => {
     shell.openExternal(url);
 });
 
+ipcMain.handle('autostart:get', () => app.getLoginItemSettings().openAtLogin);
+
+ipcMain.handle('autostart:set', (_, enabled) => {
+    app.setLoginItemSettings({
+        openAtLogin: enabled,
+        args: enabled ? ['--hidden'] : []
+    });
+    return true;
+});
+
 ipcMain.handle('file:get-pdf-path', async (event, { suggestedName }) => {
     const defaultDir = store.get('standard-folder') || app.getPath('documents');
     const { canceled, filePath } = await dialog.showSaveDialog({
@@ -259,14 +277,40 @@ ipcMain.handle('file:print-to-pdf', async (event, { html, filePath }) => {
     }
 });
 
+let tray = null;
+
 app.whenReady().then(() => {
     if (process.platform === 'win32') {
-        // packageInfo.build is often stripped by electron-builder in the packaged app
         app.setAppUserModelId('com.marki.editor');
     }
-    createWindow();
+
+    // Tray icon
+    const icon = nativeImage.createFromPath(path.join(__dirname, '../assets/logo.png'));
+    tray = new Tray(icon.resize({ width: 16, height: 16 }));
+    tray.setToolTip('Marki');
+    tray.setContextMenu(Menu.buildFromTemplate([
+        { label: 'Open', click: () => createWindow() },
+        { type: 'separator' },
+        { label: 'Quit', click: () => { app.quit(); } }
+    ]));
+    tray.on('click', () => createWindow());
+
+    if (!process.argv.includes('--hidden')) {
+        createWindow();
+    }
+
+    globalShortcut.unregisterAll();
+    const shortcut = 'Alt+Shift+M';
+    const registered = globalShortcut.register(shortcut, () => {
+        createWindow();
+    });
+    console.log(`globalShortcut (${shortcut}):`, registered ? 'OK' : 'FAILED - shortcut blocked by OS or another app');
+});
+
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll();
 });
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+    // Keep app alive in background so the shortcut keeps working
 });

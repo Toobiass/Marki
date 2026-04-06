@@ -18,6 +18,8 @@ export interface ElectronAPI {
   saveFile: (data: { content: string; existingPath: string | null; suggestedName: string }) => Promise<FileSaveResult>;
   saveImage: (data: { arrayBuffer: ArrayBuffer; currentFilePath: string | null; extension?: string }) => Promise<{ success: boolean; fileName?: string; fullPath?: string; error?: string }>;
   getRecentFiles: () => Promise<string[]>;
+  filterExistingFiles: (paths: string[]) => Promise<string[]>;
+  getRecentFilesExisting: () => Promise<string[]>;
   readFilePath: (path: string) => Promise<FileOpenResult | null>;
   getSettings: () => Promise<any>;
   setSetting: (key: string, value: any) => Promise<boolean>;
@@ -27,6 +29,8 @@ export interface ElectronAPI {
   close: () => void;
   applySizePreset: (preset: string) => void;
   openExternal: (url: string) => void;
+  getAutostart: () => Promise<boolean>;
+  setAutostart: (enabled: boolean) => Promise<boolean>;
 }
 
 declare global {
@@ -68,6 +72,15 @@ export class ElectronService {
   async getRecentFiles() {
     return window.electronAPI.getRecentFiles();
   }
+
+  async filterExistingFiles(paths: string[]): Promise<string[]> {
+    return window.electronAPI.filterExistingFiles(paths);
+  }
+
+  async getRecentFilesExisting(): Promise<string[]> {
+    return window.electronAPI.getRecentFilesExisting();
+  }
+
   async readFilePath(path: string) {
     return window.electronAPI.readFilePath(path);
   }
@@ -107,5 +120,13 @@ export class ElectronService {
 
   openExternal(url: string) {
     window.electronAPI?.openExternal(url);
+  }
+
+  async getAutostart(): Promise<boolean> {
+    return window.electronAPI.getAutostart();
+  }
+
+  async setAutostart(enabled: boolean): Promise<boolean> {
+    return window.electronAPI.setAutostart(enabled);
   }
 }
